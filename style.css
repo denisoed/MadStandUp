@@ -1,0 +1,24 @@
+@import url(https://fonts.googleapis.com/css?family=Ubuntu);
+
+body {
+    margin: 0;
+}
+.container {
+    width: 500px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+textarea {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    box-sizing: border-box;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 15px;
+    line-height: 1.3;
+}
+
+#getStandup {
+    padding: 10px 15px;
+}
