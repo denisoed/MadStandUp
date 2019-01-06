@@ -76,4 +76,17 @@ $(document).ready(function() {
         var allComments = get_yesterday_worklog_issues();
         showStandUp(allComments);
     }
+
+    // ---------- END: Generate StandUp ---------- //
+    // ------------ Main Func ----------- //
+    $('#copyAll').on('click', function () {
+        copyAll();
+    });
+
+    function copyAll() {
+        var copyText = document.getElementById('standup-text');
+        copyText.select();
+        document.execCommand("copy");
+        alert("Copied the text: " + copyText.value);
+    }
 });
