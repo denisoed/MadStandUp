@@ -1,15 +1,21 @@
 $(document).ready(function() {
-    var btnStandup = document.getElementById('getStandup');
-
-    btnStandup.addEventListener('click', function () {
-        generateStandUp();
-    });
 
     function httpGet(url) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open("GET", url, false);
         xmlHttp.send(null);
         return xmlHttp;
+    }
+
+    // ---------- Check Validation User ---------- //
+    function setUserInfo(data) {
+        $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
+        $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
+        return userName;
+    }
+
+    function showAuthError() {
+        $('#user_info').text('Please, Login to jira!')
     }
     
     function checkValidation() {
@@ -25,14 +31,14 @@ $(document).ready(function() {
     }
     
     checkValidation();
-    
-    function setUserInfo(data) {
-        $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
-        $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
-        return userName;
-    }
 
-    function showAuthError() {
-        $('#user_info').text('Please Login to jira!')
+    // ---------- END: Check Validation User ---------- //
+    // -------------- Generate StandUp ---------------- //
+    $('#getStandup').on('click', function () {
+        generateStandUp();
+    });
+
+    function generateStandUp() {
+        alert('Coming soon...');
     }
 });
