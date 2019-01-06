@@ -38,7 +38,42 @@ $(document).ready(function() {
         generateStandUp();
     });
 
+    function get_yesterday() {
+        var today = new Date();
+        if (today.getDay() == 1) {
+            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getUTCDate() - 3)).slice(-2);
+        } else if (today.getDay() == 0) {
+            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getUTCDate() - 2)).slice(-2);
+        } else {
+            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getUTCDate() - 1)).slice(-2);
+        }
+    }
+    
+    function get_yesterday_worklog_issues() {
+        var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=worklogDate>' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog';
+        var response = httpGet(theUrl);
+        var allLogs = JSON.parse(response.responseText);
+        var logComments = [];
+        for (let i = 0; i < allLogs['issues'].length; i++) {
+            logComments.push(allLogs['issues'][i]['fields']['worklog']['worklogs'][0]['comment'])
+        }
+        return logComments;
+    }
+
+    function showStandUp(arrayText) {
+        var standup = '';
+        for (let i = 0; i < arrayText.length; i++) {
+            standup += '- ' + arrayText[i] + '\n'
+        }
+        $('#standup-text').text(
+            'Доброе утро! @comedian\n\n*Вчера*\n' + standup +
+            '\n\n*Сегодня*\n -' +
+            '\n\n*Проблемы*\n -'
+        );
+    }
+
     function generateStandUp() {
-        alert('Coming soon...');
+        var allComments = get_yesterday_worklog_issues();
+        showStandUp(allComments);
     }
 });
