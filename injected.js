@@ -11,6 +11,7 @@ $(document).ready(function() {
     function setUserInfo(data) {
         $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
+        $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
         return userName;
     }
 
@@ -50,10 +51,11 @@ $(document).ready(function() {
     }
     
     function get_yesterday_worklog_issues() {
-        var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=worklogDate>' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog';
+        var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog';
         var response = httpGet(theUrl);
         var allLogs = JSON.parse(response.responseText);
         var logComments = [];
+        alert(theUrl);
         for (let i = 0; i < allLogs['issues'].length; i++) {
             logComments.push(allLogs['issues'][i]['fields']['worklog']['worklogs'][0]['comment'])
         }
@@ -78,7 +80,7 @@ $(document).ready(function() {
     }
 
     // ---------- END: Generate StandUp ---------- //
-    // ------------ Main Func ----------- //
+    // ------------ Main Function ----------- //
     $('#copyAll').on('click', function () {
         copyAll();
     });
@@ -86,7 +88,7 @@ $(document).ready(function() {
     function copyAll() {
         var copyText = document.getElementById('standup-text');
         copyText.select();
-        document.execCommand("copy");
-        alert("Copied the text: " + copyText.value);
+        document.execCommand('copy');
+        alert('Text Copied');
     }
 });

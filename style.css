@@ -1,12 +1,26 @@
 @import url(https://fonts.googleapis.com/css?family=Ubuntu);
 
+/* #1c1e24 */
+/* #283654 */
+/* #4d638c */
+/* #cfe0f9 */
+
 body {
     margin: 0;
 }
+* {
+    text-decoration: none;
+}
+h1, h2 h3, h4, h5, h6 {
+    margin: 0;
+}
 .container {
-    width: 500px;
-    padding: 10px;
+    width: auto;
+    padding: 20px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 textarea {
     width: 100%;
@@ -21,4 +35,75 @@ textarea {
 
 #getStandup {
     padding: 10px 15px;
+}
+
+/* --------------------------- */
+#user_info {
+    display: flex;
+    align-items: flex-start;
+    margin: 30px 0;
+}
+
+#user_info .wrap-userAvatar {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #cfe0f9;
+    border-radius: 100%;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+#user_info .userAvatar {
+    width: 40px;
+    height: 40px;
+}
+
+#user_info .wrap-userInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#user_info .userName, .userMail {
+    font-size: 12px;
+    margin-top: 7px;
+}
+
+/* ----------------------- */
+.servers-btn {
+    display: flex;
+    align-items: center;
+    font-family: 'Ubuntu', sans-serif;
+    color: #1c1e24;
+}
+
+.jira-server_btn {
+    width: auto;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    box-shadow: 2px 2px 10px 0 rgba(28,30,36, .1);
+    font-size: 15px;
+    font-family: 'Ubuntu', sans-serif;
+    color: #1c1e24;
+    white-space: nowrap;
+    transition: all .3s ease;
+}
+
+.jira-server_btn:hover {
+    box-shadow: 2px 2px 10px 0 rgba(28,30,36, .2);
+}
+
+.jira-server_btn:first-child {
+    margin-right: 15px;
+}
+
+.jira-server_btn .jira-server_btn-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
 }
