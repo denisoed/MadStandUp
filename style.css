@@ -92,6 +92,7 @@ textarea {
     color: #1c1e24;
     white-space: nowrap;
     transition: all .3s ease;
+    user-select: none;
 }
 
 .jira-server_btn:hover {

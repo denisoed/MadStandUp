@@ -9,5 +9,6 @@
         "default_title": "StandUpMan",
         "default_popup": "popup.html"
     },
-    "permissions": ["https://nappyclub.atlassian.net/rest/api/2"]
+    "permissions": ["https://nappyclub.atlassian.net/rest/api/2",
+                    "https://pm.maddevs.co/rest/api/2"]
 }

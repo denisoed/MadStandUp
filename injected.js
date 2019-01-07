@@ -1,10 +1,15 @@
 $(document).ready(function() {
 
-    function httpGet(url) {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open("GET", url, false);
-        xmlHttp.send(null);
-        return xmlHttp;
+    var servers = ['https://nappyclub.atlassian.net', 'https://pm.maddevs.co'];
+
+    function httpGet(method, url) {
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.open(method, url);
+            xhr.onload = resolve;
+            xhr.onerror = reject;
+            xhr.send();
+        });
     }
 
     // ---------- Check Validation User ---------- //
@@ -16,19 +21,25 @@ $(document).ready(function() {
     }
 
     function showAuthError() {
-        $('#user_info').text('Please, Login to jira!')
+        $('#popup-container').text('Please, Login to jira!')
     }
     
     function checkValidation() {
-        var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=assignee=currentuser()';
-        var response = httpGet(theUrl);
-        if (response.status != 200) {
-            showAuthError();
-            return response.status;
-        } else {
-            var data = JSON.parse(response.responseText);
-            return setUserInfo(data);
-        }
+        servers.forEach(function(server) {
+            var theUrl = server + '/rest/api/2/search?jql=assignee=currentuser()';
+            httpGet('GET', theUrl).then(function (data) {
+                var r = JSON.parse(data.target.response);
+                return setUserInfo(r);
+            }, function (e) {
+                var stop = true;
+                if (stop) {
+                    checkValidation();
+                    stop = false;  
+                } else {
+                    showAuthError();
+                }
+            });
+        });
     }
     
     checkValidation();
@@ -42,24 +53,27 @@ $(document).ready(function() {
     function get_yesterday() {
         var today = new Date();
         if (today.getDay() == 1) {
-            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getUTCDate() - 3)).slice(-2);
+            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 3)).slice(-2);
         } else if (today.getDay() == 0) {
-            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getUTCDate() - 2)).slice(-2);
+            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 2)).slice(-2);
         } else {
-            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getUTCDate() - 1)).slice(-2);
+            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 1)).slice(-2);
         }
     }
     
     function get_yesterday_worklog_issues() {
         var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog';
-        var response = httpGet(theUrl);
-        var allLogs = JSON.parse(response.responseText);
-        var logComments = [];
-        alert(theUrl);
-        for (let i = 0; i < allLogs['issues'].length; i++) {
-            logComments.push(allLogs['issues'][i]['fields']['worklog']['worklogs'][0]['comment'])
-        }
-        return logComments;
+        httpGet('GET', theUrl).then(function (data) {
+            var allLogs = JSON.parse(data.target.response);
+            var logComments = [];
+            for (let i = 0; i < allLogs['issues'].length; i++) {
+                logComments.push(allLogs['issues'][i]['fields']['worklog']['worklogs'][0]['comment'])
+            }
+            showStandUp(logComments);
+            return logComments;
+        }, function (e) {
+            alert(e);
+        });
     }
 
     function showStandUp(arrayText) {
@@ -75,8 +89,7 @@ $(document).ready(function() {
     }
 
     function generateStandUp() {
-        var allComments = get_yesterday_worklog_issues();
-        showStandUp(allComments);
+        get_yesterday_worklog_issues();
     }
 
     // ---------- END: Generate StandUp ---------- //

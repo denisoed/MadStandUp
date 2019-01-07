@@ -2,13 +2,13 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Test1</title>
+    <title>Popup Menu</title>
     <script src="jquery.js"></script>
     <script src="injected.js"></script>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div class="container">
+    <div class="container" id="popup-container">
       <h1>StandUpMan</h1>
       <div id="user_info">
         <div class="wrap-userAvatar">
@@ -20,12 +20,9 @@
         </div>
       </div>
       <div class="servers-btn">
-        <a class="jira-server_btn" href=""><img src="blue-jira.png" class="jira-server_btn-icon" alt="Jira">Jira Software</a>
-        <a class="jira-server_btn" href=""><img src="red-jira.png" class="jira-server_btn-icon" alt="Jira">Puzanov Production</a>
+        <a class="jira-server_btn" href="newtab.html" target="_blank"><img src="blue-jira.png" class="jira-server_btn-icon" alt="Jira">Jira Software</a>
+        <a class="jira-server_btn"><img src="red-jira.png" class="jira-server_btn-icon" alt="Jira">Puzanov Production</a>
       </div>
-      <!-- <button id="getStandup">Get standup!</button>
-      <textarea id="standup-text" rows="10"></textarea>
-      <button id="copyAll">Copy All</button> -->
     </div>
   </body>
 </html>
