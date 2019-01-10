@@ -25,13 +25,13 @@ $(document).ready(function() {
     }
     
     function checkValidation() {
+        var stop = true;
         servers.forEach(function(server) {
             var theUrl = server + '/rest/api/2/search?jql=assignee=currentuser()';
             httpGet('GET', theUrl).then(function (data) {
                 var r = JSON.parse(data.target.response);
                 return setUserInfo(r);
             }, function (e) {
-                var stop = true;
                 if (stop) {
                     checkValidation();
                     stop = false;  
@@ -61,18 +61,62 @@ $(document).ready(function() {
         }
     }
     
-    function get_yesterday_worklog_issues() {
-        var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog';
-        httpGet('GET', theUrl).then(function (data) {
-            var allLogs = JSON.parse(data.target.response);
-            var logComments = [];
-            for (let i = 0; i < allLogs['issues'].length; i++) {
-                logComments.push(allLogs['issues'][i]['fields']['worklog']['worklogs'][0]['comment'])
-            }
-            showStandUp(logComments);
-            return logComments;
-        }, function (e) {
-            alert(e);
+    function get_yesterday_issues_with_worklogs() {
+        return new Promise(resolve => {
+            // var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+            var theUrl = 'https://pm.maddevs.co/rest/api/2/search?jql=worklogDate=2019-01-09%20AND%20worklogAuthor=currentuser()&fields=worklog';
+            httpGet('GET', theUrl).then(function(data) {
+                var issuesWithLogs = JSON.parse(data.target.response);
+                get_worklogs_from_issues(issuesWithLogs['issues']).then(function(data) {
+                    resolve(data);
+                });
+            }, function (e) {
+                alert(e);
+            });
+        });
+    }
+
+    function get_worklogs_from_issues(issues) {
+        return new Promise(async resolve => {
+            var comments = [];
+            issues.forEach(function(issue) {
+                get_worklogs_comments_from_issue(issue['key']).then(function(comment) {
+                    comment.forEach(function(text) {
+                        comments.push(text);
+                    });
+                });
+            });
+            setTimeout(() => {
+                console.log(comments);
+                resolve(comments);
+            }, 2000);
+        });
+    }
+
+    function get_worklogs_comments_from_issue(issueKey) {
+        var theUrl = 'https://pm.maddevs.co/rest/api/2/issue/' + issueKey + '/worklog';
+        return new Promise(resolve => {
+            httpGet('GET', theUrl).then(function (data) {
+                var r = JSON.parse(data.target.response);
+                get_comments(r).then(function(comment) {
+                    resolve(comment);
+                });
+            }, function (e) {
+                alert('Error: ' + e);
+            });
+        });
+    }
+
+    function get_comments(worklogs) {
+        var issuesWorklogList = worklogs['worklogs'];
+        return new Promise(resolve => {
+            var array = [];
+            issuesWorklogList.forEach(function (log) {
+                if (log['created'].slice(0, 10) == get_yesterday()) {
+                    array.push(log['comment']);
+                    resolve(array);
+                }
+            });
         });
     }
 
@@ -88,8 +132,10 @@ $(document).ready(function() {
         );
     }
 
-    function generateStandUp() {
-        get_yesterday_worklog_issues();
+    async function generateStandUp() {
+        await get_yesterday_issues_with_worklogs().then(function(data) {
+            showStandUp(data);
+        });
     }
 
     // ---------- END: Generate StandUp ---------- //
