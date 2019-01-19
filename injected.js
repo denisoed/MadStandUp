@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    var servers = ['https://nappyclub.atlassian.net', 'https://pm.maddevs.co'];
+    var servers = ['https://kickico4.atlassian.net', 'https://nappyclub.atlassian.net', 'https://pm.maddevs.co'];
 
     function httpGet(method, url) {
         return new Promise(function (resolve, reject) {
@@ -14,6 +14,8 @@ $(document).ready(function() {
 
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
+        $('#valid-user').removeClass('block--hide');
+        $('#valid-server').addClass('block--hide');
         $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
@@ -24,25 +26,21 @@ $(document).ready(function() {
         $('#popup-container').text('Please, Login to jira!')
     }
     
-    function checkValidation() {
-        var stop = true;
-        servers.forEach(function(server) {
-            var theUrl = server + '/rest/api/2/search?jql=assignee=currentuser()';
-            httpGet('GET', theUrl).then(function (data) {
-                var r = JSON.parse(data.target.response);
-                return setUserInfo(r);
-            }, function (e) {
-                if (stop) {
-                    checkValidation();
-                    stop = false;  
-                } else {
-                    showAuthError();
-                }
-            });
+    function checkValidation(server) {
+        var theUrl = server + '/rest/api/2/search?jql=assignee=currentuser()';
+        httpGet('GET', theUrl).then(function (data) {
+            var r = JSON.parse(data.target.response);
+            return setUserInfo(r);
+        }, function (e) {
+            showAuthError();
         });
     }
+
+    $('#checkConnectJira').on('click', function () {
+        var serverUrl = $('#server-url').val();
+        checkValidation(serverUrl);
+    });
     
-    checkValidation();
 
     // ---------- END: Check Validation User ---------- //
     // -------------- Generate StandUp ---------------- //
@@ -63,10 +61,12 @@ $(document).ready(function() {
     
     function get_yesterday_issues_with_worklogs() {
         return new Promise(resolve => {
-            // var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
-            var theUrl = 'https://pm.maddevs.co/rest/api/2/search?jql=worklogDate=2019-01-09%20AND%20worklogAuthor=currentuser()&fields=worklog';
+            // var theUrl = 'https://kickico4.atlassian.net/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+            var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+            // var theUrl = 'https://pm.maddevs.co/rest/api/2/search?jql=worklogDate=2019-01-09%20AND%20worklogAuthor=currentuser()&fields=worklog';
             httpGet('GET', theUrl).then(function(data) {
                 var issuesWithLogs = JSON.parse(data.target.response);
+                console.log(issuesWithLogs);
                 get_worklogs_from_issues(issuesWithLogs['issues']).then(function(data) {
                     resolve(data);
                 });
@@ -94,7 +94,8 @@ $(document).ready(function() {
     }
 
     function get_worklogs_comments_from_issue(issueKey) {
-        var theUrl = 'https://pm.maddevs.co/rest/api/2/issue/' + issueKey + '/worklog';
+        var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/issue/' + issueKey + '/worklog';
+        // var theUrl = 'https://kickico4.atlassian.net/rest/api/2/issue/' + issueKey + '/worklog';
         return new Promise(resolve => {
             httpGet('GET', theUrl).then(function (data) {
                 var r = JSON.parse(data.target.response);
