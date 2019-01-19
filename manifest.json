@@ -5,7 +5,7 @@
     "version": "0.0.3",
     "author": "Denisoed",
     "browser_action": {
-        "default_icon": "tab-icon.png",
+        "default_icon": "img/tab-icon.png",
         "default_title": "StandUpMan",
         "default_popup": "popup.html"
     },
