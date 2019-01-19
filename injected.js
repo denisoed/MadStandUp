@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
     var servers = ['https://kickico4.atlassian.net', 'https://nappyclub.atlassian.net', 'https://pm.maddevs.co'];
+    var serverUrl = window.localStorage.getItem('active-server-url');
 
     function httpGet(method, url) {
         return new Promise(function (resolve, reject) {
@@ -26,10 +27,11 @@ $(document).ready(function() {
         $('#popup-container').text('Please, Login to jira!')
     }
     
-    function checkValidation(server) {
-        var theUrl = server + '/rest/api/2/search?jql=assignee=currentuser()';
+    function checkValidation(url) {
+        var theUrl = url + '/rest/api/2/search?jql=assignee=currentuser()';
         httpGet('GET', theUrl).then(function (data) {
             var r = JSON.parse(data.target.response);
+            localStorage.setItem('active-server-url', url);
             return setUserInfo(r);
         }, function (e) {
             showAuthError();
@@ -61,9 +63,7 @@ $(document).ready(function() {
     
     function get_yesterday_issues_with_worklogs() {
         return new Promise(resolve => {
-            // var theUrl = 'https://kickico4.atlassian.net/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
-            var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
-            // var theUrl = 'https://pm.maddevs.co/rest/api/2/search?jql=worklogDate=2019-01-09%20AND%20worklogAuthor=currentuser()&fields=worklog';
+            var theUrl = serverUrl + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
             httpGet('GET', theUrl).then(function(data) {
                 var issuesWithLogs = JSON.parse(data.target.response);
                 console.log(issuesWithLogs);
@@ -94,8 +94,7 @@ $(document).ready(function() {
     }
 
     function get_worklogs_comments_from_issue(issueKey) {
-        var theUrl = 'https://nappyclub.atlassian.net/rest/api/2/issue/' + issueKey + '/worklog';
-        // var theUrl = 'https://kickico4.atlassian.net/rest/api/2/issue/' + issueKey + '/worklog';
+        var theUrl = serverUrl + '/rest/api/2/issue/' + issueKey + '/worklog';
         return new Promise(resolve => {
             httpGet('GET', theUrl).then(function (data) {
                 var r = JSON.parse(data.target.response);
