@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Popup Menu</title>
+    <script src="jquery.js"></script>
+    <script src="injected.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="container" id="popup-container">
+      <h1>StandUpMan</h1>
+      <div id="valid-user" class="valid-user block--hide">
+        <div id="user_info">
+          <div class="wrap-userAvatar">
+            <img id="userAvatar" class="userAvatar" src="" alt="Current user">
+          </div>
+          <div class="wrap-userInfo">
+            <h5 id="userName" class="userName"></h5>
+            <h5 id="userMail" class="userMail"></h5>
+          </div>
+        </div>
+        <a class="check-connect-jira" href="newtab.html" target="_blank"><img src="img/blue-jira.png" class="check-connect-jira-icon" alt="Jira">Jira Software</a>
+      </div>
+      <div id="valid-server" class="valid-server">
+        <label class="server-url-label" for="server-url">
+          <img src="img/worldwide.svg" alt="Server url">
+          <input id="server-url" type="text" name="server" placeholder="Enter server url">
+        </label>
+        <div class="valid-server__btns">
+          <a id="checkConnectJira" class="check-connect-jira"><img src="img/id-card.svg" class="check-connect-jira-icon" alt="Jira">Connection</a>
+          <!-- <button class="check-connect-jira">Save url</button> -->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
