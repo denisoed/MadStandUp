@@ -2,6 +2,7 @@ $(document).ready(function() {
 
     var servers = ['https://kickico4.atlassian.net', 'https://nappyclub.atlassian.net', 'https://pm.maddevs.co'];
     var serverUrl = window.localStorage.getItem('active-server-url');
+    var userInfo = {};
 
     function httpGet(method, url) {
         return new Promise(function (resolve, reject) {
@@ -21,6 +22,14 @@ $(document).ready(function() {
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
         return userName;
+    }
+
+    function getUserInfo(url) {
+        var theUrl = url + '/rest/api/2/search?jql=assignee=currentuser()';
+        httpGet('GET', theUrl).then(function (data) {
+            var r = JSON.parse(data.target.response);
+            userInfo = r['issues'][0]['fields']['assignee'];
+        });
     }
 
     function showAuthError() {
@@ -43,7 +52,7 @@ $(document).ready(function() {
         checkValidation(serverUrl);
     });
     
-
+    getUserInfo(serverUrl);
     // ---------- END: Check Validation User ---------- //
     // -------------- Generate StandUp ---------------- //
     $('#getStandup').on('click', function () {
@@ -66,7 +75,6 @@ $(document).ready(function() {
             var theUrl = serverUrl + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
             httpGet('GET', theUrl).then(function(data) {
                 var issuesWithLogs = JSON.parse(data.target.response);
-                console.log(issuesWithLogs);
                 get_worklogs_from_issues(issuesWithLogs['issues']).then(function(data) {
                     resolve(data);
                 });
@@ -87,7 +95,6 @@ $(document).ready(function() {
                 });
             });
             setTimeout(() => {
-                console.log(comments);
                 resolve(comments);
             }, 2000);
         });
@@ -112,7 +119,8 @@ $(document).ready(function() {
         return new Promise(resolve => {
             var array = [];
             issuesWorklogList.forEach(function (log) {
-                if (log['created'].slice(0, 10) == get_yesterday()) {
+                if (log['created'].slice(0, 10) == get_yesterday() &&
+                    userInfo['name'] == log['author']['name']) {
                     array.push(log['comment']);
                     resolve(array);
                 }
@@ -121,12 +129,13 @@ $(document).ready(function() {
     }
 
     function showStandUp(arrayText) {
-        var standup = '';
-        for (let i = 0; i < arrayText.length; i++) {
-            standup += '- ' + arrayText[i] + '\n'
+        var texts = arrayText;
+        var yesterday = '';
+        for (let i = 0; i < texts.length; i++) {
+            yesterday += '- ' + texts[i] + '\n'
         }
         $('#standup-text').text(
-            'Доброе утро! @comedian\n\n*Вчера*\n' + standup +
+            'Доброе утро! @comedian\n\n*Вчера*\n' + yesterday +
             '\n\n*Сегодня*\n -' +
             '\n\n*Проблемы*\n -'
         );
