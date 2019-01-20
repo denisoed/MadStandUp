@@ -5,10 +5,30 @@
 /* #4d638c */
 /* #cfe0f9 */
 
+html {
+    scrollbar-face-color: #646464;
+    scrollbar-base-color: #646464;
+    scrollbar-3dlight-color: #646464;
+    scrollbar-highlight-color: #646464;
+    scrollbar-track-color: #000;
+    scrollbar-arrow-color: #000;
+    scrollbar-shadow-color: #646464;
+    scrollbar-dark-shadow-color: #646464;
+}
+
 body {
     min-width: 350px;
     margin: 0;
 }
+
+::-webkit-scrollbar { width: 8px; height: 3px;}
+::-webkit-scrollbar-button {  background-color: #666; }
+::-webkit-scrollbar-track {  background-color: transparent;}
+::-webkit-scrollbar-track-piece { background-color: transparent;}
+::-webkit-scrollbar-thumb { height: 50px; background-color: #666; border-radius: 3px;}
+::-webkit-scrollbar-corner { background-color: #646464;}
+::-webkit-resizer { background-color: #666;}
+
 * {
     text-decoration: none;
     outline: none;
@@ -24,16 +44,6 @@ h1, h2 h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-}
-textarea {
-    width: 100%;
-    max-width: 100%;
-    margin-top: 15px;
-    padding: 10px;
-    box-sizing: border-box;
-    font-family: 'Ubuntu', sans-serif;
-    font-size: 15px;
-    line-height: 1.3;
 }
 
 #getStandup {
@@ -154,4 +164,28 @@ h1 {
 .check-connect-jira .check-connect-jira-icon {
     width: 30px;
     height: 30px;
+}
+
+/* ------------ Generate standup ------------ */
+.standup-result {
+    position: relative;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.standup-result #copyAll {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+
+textarea {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 15px;
+    line-height: 1.3;
 }

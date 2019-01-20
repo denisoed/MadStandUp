@@ -144,7 +144,7 @@ $(document).ready(function() {
             for (let j = 0; j < texts[i].length; j++) {
                 comment += texts[i][j] + ' ';
             }
-            yesterday += '- ' + comment + '\n';
+            yesterday += '- ' + comment.trim() + '\n';
         }
         $('#standup-text').text(
             'Доброе утро! @comedian\n\n*Вчера*\n' + yesterday +
@@ -162,6 +162,7 @@ $(document).ready(function() {
     // ---------- END: Generate StandUp ---------- //
     // ------------ Main Function ----------- //
     $('#copyAll').on('click', function () {
+        $(this).text('Copied');
         copyAll();
     });
 
