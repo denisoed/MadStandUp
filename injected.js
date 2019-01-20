@@ -32,18 +32,28 @@ $(document).ready(function() {
         });
     }
 
-    function showAuthError() {
-        $('#popup-container').text('Please, Login to jira!')
+    function showAuthError(el) {
+        $(el).removeClass('block--hide');
+    }
+
+    function hideAuthError(el) {
+        $(el).addClass('block--hide');
     }
     
     function checkValidation(url) {
         var theUrl = url + '/rest/api/2/search?jql=assignee=currentuser()';
         httpGet('GET', theUrl).then(function (data) {
+            hideAuthError('.not-link');
             var r = JSON.parse(data.target.response);
-            localStorage.setItem('active-server-url', url);
-            return setUserInfo(r);
+            if (data.target.status == 400) {
+                showAuthError('.not-auth');
+            } else {
+                hideAuthError('.not-auth');
+                localStorage.setItem('active-server-url', url);
+                return setUserInfo(r);
+            }
         }, function (e) {
-            showAuthError();
+            showAuthError('.not-link');
         });
     }
 

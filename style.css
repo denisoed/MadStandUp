@@ -84,8 +84,9 @@ h1 {
 .valid-server {
     width: 100%;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
+    flex-direction: row;
+    justify-content: space-between;
     font-family: 'Ubuntu', sans-serif;
     color: #1c1e24;
 }
@@ -93,44 +94,48 @@ h1 {
 .valid-server .server-url-label {
     width: 100%;
     display: flex;
-    justify-content: space-between;
-    border: 1px solid rgba(28, 30, 36, .1);
-    box-shadow: 2px 2px 10px 0 rgba(28,30,36, .1);
-    padding: 8px;
-    box-sizing: border-box;
-    margin-bottom: 15px;
-    border-radius: 5px;
+    flex-direction: column;
 }
 
-.valid-server .server-url-label img {
-    width: 20px;
-    height: 20px;
-    display: block;
-    margin-right: 5px;
+.valid-server .server-url-label .http-error {
+    width: 100%;
+    color: red;
+    font-size: 11px;
+    margin: 0;
+    margin-bottom: 4px;
 }
 
 .valid-server .server-url-label input {
     width: 100%;
-    border: none;
     font-size: 16px;
+    border: 1px solid rgba(28, 30, 36, .1);
+    box-shadow: 2px 2px 10px 0 rgba(28,30,36, .1);
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+.valid-server .server-url-label input::-webkit-input-placeholder {
+    font-size: 12px;
+    color: #4d638c;
+    opacity: .7;
 }
 
 .valid-server__btns {
     display: flex;
     justify-content: space-between;
-    width: 100%;
+    margin-left: 10px;
 }
 
 .check-connect-jira {
     width: auto;
-    min-width: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 20px;
-    padding: 10px 15px;
+    padding: 5px;
     box-sizing: border-box;
-    box-shadow: 2px 2px 10px 0 rgba(28,30,36, .2);
+    box-shadow: 0px 0px 10px 0 rgba(28,30,36, .2);
     font-size: 15px;
     font-family: 'Ubuntu', sans-serif;
     color: #1c1e24;
@@ -147,7 +152,6 @@ h1 {
 }
 
 .check-connect-jira .check-connect-jira-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
+    width: 30px;
+    height: 30px;
 }
