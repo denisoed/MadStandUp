@@ -179,6 +179,7 @@ $(document).ready(function() {
     }
 
     $('#rememberJiraUrl').on('click', function () {
+        $(this).text('Saved!');
         var insertedUrl = $('#server-url').val();
         rememberJiraUrl(insertedUrl);
     });
@@ -212,7 +213,7 @@ $(document).ready(function() {
         return Object.values(jiraServers);
     }
 
-    function setSavedJiraUrl() {
+    function showSavedJiraUrl() {
         var servers = getSavedJiraUrl();
         for (let i = 0; i < servers.length; i++) {
             $('#saved-servers').append(
@@ -228,7 +229,7 @@ $(document).ready(function() {
     });
     // -------------- INIT ---------------- //
     function init() {
-        setSavedJiraUrl();
+        showSavedJiraUrl();
     }
     init();
 });
