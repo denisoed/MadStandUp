@@ -17,7 +17,7 @@ $(document).ready(function() {
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
         $('#valid-user').removeClass('block--hide');
-        $('#valid-server').addClass('block--hide');
+        $('#wrap-no-valid').addClass('block--hide');
         $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
@@ -177,4 +177,58 @@ $(document).ready(function() {
         copyText.select();
         document.execCommand('copy');
     }
+
+    $('#rememberJiraUrl').on('click', function () {
+        var insertedUrl = $('#server-url').val();
+        rememberJiraUrl(insertedUrl);
+    });
+
+    function rememberJiraUrl(url) {
+        var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
+        var server = {};
+
+        if (jiraServers == null) {
+            server = {
+                0: url
+            };
+            window.localStorage.setItem('jira-servers', JSON.stringify(server));
+        } else {
+            var keys = Object.keys(jiraServers);
+            var values = Object.values(jiraServers);
+            for (let i = 0; i < values.length; i++) {
+                if (jiraServers[i] != url) {
+                    jiraServers[Number(keys[keys.length-1]) + 1] = url;
+                    window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
+                    break;
+                } else {
+                    alert('Url exist');
+                }
+            }
+        }
+    }
+
+    function getSavedJiraUrl() {
+        var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
+        return Object.values(jiraServers);
+    }
+
+    function setSavedJiraUrl() {
+        var servers = getSavedJiraUrl();
+        for (let i = 0; i < servers.length; i++) {
+            $('#saved-servers').append(
+                '<button class="saved-servers__btn" value="' + servers[i] + '">' + servers[i] + '</button>'
+            );
+        }
+    }
+
+    $('#saved-servers').on('click', function (e) {
+        if (e.target.nodeName == 'BUTTON') {
+            checkValidation(e.target.value);
+        }
+    });
+    // -------------- INIT ---------------- //
+    function init() {
+        setSavedJiraUrl();
+    }
+    init();
 });

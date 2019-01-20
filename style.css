@@ -91,7 +91,11 @@ h1 {
 }
 
 /* ----------------------- */
-.valid-server {
+.wrap-no-valid {
+    display: flex;
+    flex-direction: column;
+}
+.no-valid-server {
     width: 100%;
     display: flex;
     align-items: flex-end;
@@ -101,13 +105,13 @@ h1 {
     color: #1c1e24;
 }
 
-.valid-server .server-url-label {
+.no-valid-server .server-url-label {
     width: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.valid-server .server-url-label .http-error {
+.no-valid-server .server-url-label .http-error {
     width: 100%;
     color: red;
     font-size: 11px;
@@ -115,7 +119,7 @@ h1 {
     margin-bottom: 4px;
 }
 
-.valid-server .server-url-label input {
+.no-valid-server .server-url-label input {
     width: 100%;
     font-size: 16px;
     border: 1px solid rgba(28, 30, 36, .1);
@@ -125,13 +129,13 @@ h1 {
     border-radius: 5px;
 }
 
-.valid-server .server-url-label input::-webkit-input-placeholder {
+.no-valid-server .server-url-label input::-webkit-input-placeholder {
     font-size: 12px;
     color: #4d638c;
     opacity: .7;
 }
 
-.valid-server__btns {
+.no-valid-server__btns {
     display: flex;
     justify-content: space-between;
     margin-left: 10px;
@@ -164,6 +168,10 @@ h1 {
 .check-connect-jira .check-connect-jira-icon {
     width: 30px;
     height: 30px;
+}
+
+#saved-servers {
+    width: 100%;
 }
 
 /* ------------ Generate standup ------------ */
