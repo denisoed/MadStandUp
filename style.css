@@ -91,10 +91,22 @@ h1 {
 }
 
 /* ----------------------- */
+.valid-user {
+    width: 100%;
+}
+
+.valid-user_btns {
+    word-wrap: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
 .wrap-no-valid {
+    width: 100%;
     display: flex;
     flex-direction: column;
 }
+
 .no-valid-server {
     width: 100%;
     display: flex;
@@ -172,6 +184,17 @@ h1 {
 
 #saved-servers {
     width: 100%;
+}
+
+#saved-servers button {
+    padding: 5px 10px;
+    margin-top: 10px;
+}
+
+#rememberJiraUrl {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 /* ------------ Generate standup ------------ */

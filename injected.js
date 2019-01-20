@@ -216,7 +216,7 @@ $(document).ready(function() {
         var servers = getSavedJiraUrl();
         for (let i = 0; i < servers.length; i++) {
             $('#saved-servers').append(
-                '<button class="saved-servers__btn" value="' + servers[i] + '">' + servers[i] + '</button>'
+                '<button class="saved-servers__btn check-connect-jira" value="' + servers[i] + '">' + servers[i] + '</button>'
             );
         }
     }

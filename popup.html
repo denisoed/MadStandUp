@@ -20,8 +20,10 @@
             <h5 id="userMail" class="userMail"></h5>
           </div>
         </div>
-        <a class="check-connect-jira" href="newtab.html" target="_blank">Get StandUp</a>
-        <button id="rememberJiraUrl">Remember jira url</button>
+        <div class="valid-user_btns">
+          <a class="check-connect-jira" href="newtab.html" target="_blank">Get StandUp</a>
+          <button id="rememberJiraUrl">Remember jira url</button>
+        </div>
       </div>
       <div id="wrap-no-valid" class="wrap-no-valid">
         <div id="no-valid-server" class="no-valid-server">
@@ -30,7 +32,7 @@
             <p class="http-error not-auth block--hide">Please, login to the inserted link!</p>
             <input id="server-url" type="text" name="server" placeholder="Example: https://my-jira.atlassian.net">
           </label>
-          <div class="valid-server__btns">
+          <div class="no-valid-server__btns">
             <a id="checkConnectJira" class="check-connect-jira"><img src="img/plus.svg" class="check-connect-jira-icon" alt="Jira"></a>
           </div>
         </div>
