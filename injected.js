@@ -17,7 +17,7 @@ $(document).ready(function() {
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
         $('#valid-user').removeClass('block--hide');
-        $('#valid-server').addClass('block--hide');
+        $('#wrap-no-valid').addClass('block--hide');
         $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
@@ -32,18 +32,28 @@ $(document).ready(function() {
         });
     }
 
-    function showAuthError() {
-        $('#popup-container').text('Please, Login to jira!')
+    function showAuthError(el) {
+        $(el).removeClass('block--hide');
+    }
+
+    function hideAuthError(el) {
+        $(el).addClass('block--hide');
     }
     
     function checkValidation(url) {
         var theUrl = url + '/rest/api/2/search?jql=assignee=currentuser()';
         httpGet('GET', theUrl).then(function (data) {
+            hideAuthError('.not-link');
             var r = JSON.parse(data.target.response);
-            localStorage.setItem('active-server-url', url);
-            return setUserInfo(r);
+            if (data.target.status == 400) {
+                showAuthError('.not-auth');
+            } else {
+                hideAuthError('.not-auth');
+                localStorage.setItem('active-server-url', url);
+                return setUserInfo(r);
+            }
         }, function (e) {
-            showAuthError();
+            showAuthError('.not-link');
         });
     }
 
@@ -54,6 +64,7 @@ $(document).ready(function() {
     
     getUserInfo(serverUrl);
     // ---------- END: Check Validation User ---------- //
+
     // -------------- Generate StandUp ---------------- //
     $('#getStandup').on('click', function () {
         generateStandUp();
@@ -89,9 +100,7 @@ $(document).ready(function() {
             var comments = [];
             issues.forEach(function(issue) {
                 get_worklogs_comments_from_issue(issue['key']).then(function(comment) {
-                    comment.forEach(function(text) {
-                        comments.push(text);
-                    });
+                    comments.push(comment);
                 });
             });
             setTimeout(() => {
@@ -102,11 +111,16 @@ $(document).ready(function() {
 
     function get_worklogs_comments_from_issue(issueKey) {
         var theUrl = serverUrl + '/rest/api/2/issue/' + issueKey + '/worklog';
+        var issueLink = serverUrl + '/browse/' + issueKey;
         return new Promise(resolve => {
             httpGet('GET', theUrl).then(function (data) {
                 var r = JSON.parse(data.target.response);
                 get_comments(r).then(function(comment) {
-                    resolve(comment);
+                    var commentObj = {
+                        texts: comment,
+                        issueLink: issueLink
+                    }
+                    resolve(commentObj);
                 });
             }, function (e) {
                 alert('Error: ' + e);
@@ -132,12 +146,16 @@ $(document).ready(function() {
         var texts = arrayText;
         var yesterday = '';
         for (let i = 0; i < texts.length; i++) {
-            yesterday += '- ' + texts[i] + '\n'
+            var comment = '';
+            for (let j = 0; j < texts[i]['texts'].length; j++) {
+                comment += texts[i]['texts'][j] + ' ';
+            }
+            yesterday += '- ' + comment.trim() + ' ' + texts[i]['issueLink'] + '\n';
         }
         $('#standup-text').text(
             'Доброе утро! @comedian\n\n*Вчера*\n' + yesterday +
-            '\n\n*Сегодня*\n -' +
-            '\n\n*Проблемы*\n -'
+            '\n*Сегодня*\n -' +
+            '\n\n*Проблемы*\n - Нет проблем!'
         );
     }
 
@@ -146,10 +164,11 @@ $(document).ready(function() {
             showStandUp(data);
         });
     }
-
     // ---------- END: Generate StandUp ---------- //
+
     // ------------ Main Function ----------- //
     $('#copyAll').on('click', function () {
+        $(this).text('Copied');
         copyAll();
     });
 
@@ -157,6 +176,60 @@ $(document).ready(function() {
         var copyText = document.getElementById('standup-text');
         copyText.select();
         document.execCommand('copy');
-        alert('Text Copied');
     }
+
+    $('#rememberJiraUrl').on('click', function () {
+        $(this).text('Saved!');
+        var insertedUrl = $('#server-url').val();
+        rememberJiraUrl(insertedUrl);
+    });
+
+    function rememberJiraUrl(url) {
+        var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
+        var server = {};
+
+        if (jiraServers == null) {
+            server = {
+                0: url
+            };
+            window.localStorage.setItem('jira-servers', JSON.stringify(server));
+        } else {
+            var keys = Object.keys(jiraServers);
+            var values = Object.values(jiraServers);
+            for (let i = 0; i < values.length; i++) {
+                if (jiraServers[i] != url) {
+                    jiraServers[Number(keys[keys.length-1]) + 1] = url;
+                    window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
+                    break;
+                } else {
+                    alert('Url exist');
+                }
+            }
+        }
+    }
+
+    function getSavedJiraUrl() {
+        var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
+        return Object.values(jiraServers);
+    }
+
+    function showSavedJiraUrl() {
+        var servers = getSavedJiraUrl();
+        for (let i = 0; i < servers.length; i++) {
+            $('#saved-servers').append(
+                '<button class="saved-servers__btn check-connect-jira" value="' + servers[i] + '">' + servers[i] + '</button>'
+            );
+        }
+    }
+
+    $('#saved-servers').on('click', function (e) {
+        if (e.target.nodeName == 'BUTTON') {
+            checkValidation(e.target.value);
+        }
+    });
+    // -------------- INIT ---------------- //
+    function init() {
+        showSavedJiraUrl();
+    }
+    init();
 });
