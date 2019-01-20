@@ -1,18 +1,12 @@
+import {
+    checkUserAuth,
+    getWorklogs
+} from './api.js';
+
+
 $(document).ready(function() {
 
-    var servers = ['https://kickico4.atlassian.net', 'https://nappyclub.atlassian.net', 'https://pm.maddevs.co'];
     var serverUrl = window.localStorage.getItem('active-server-url');
-    var userInfo = {};
-
-    function httpGet(method, url) {
-        return new Promise(function (resolve, reject) {
-            var xhr = new XMLHttpRequest();
-            xhr.open(method, url);
-            xhr.onload = resolve;
-            xhr.onerror = reject;
-            xhr.send();
-        });
-    }
 
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
@@ -24,14 +18,6 @@ $(document).ready(function() {
         return userName;
     }
 
-    function getUserInfo(url) {
-        var theUrl = url + '/rest/api/2/search?jql=assignee=currentuser()';
-        httpGet('GET', theUrl).then(function (data) {
-            var r = JSON.parse(data.target.response);
-            userInfo = r['issues'][0]['fields']['assignee'];
-        });
-    }
-
     function showAuthError(el) {
         $(el).removeClass('block--hide');
     }
@@ -41,15 +27,14 @@ $(document).ready(function() {
     }
     
     function checkValidation(url) {
-        var theUrl = url + '/rest/api/2/search?jql=assignee=currentuser()';
-        httpGet('GET', theUrl).then(function (data) {
+        checkUserAuth(url).then(function (data) {
             hideAuthError('.not-link');
             var r = JSON.parse(data.target.response);
-            if (data.target.status == 400) {
+            if (data.status == 400) {
                 showAuthError('.not-auth');
             } else {
                 hideAuthError('.not-auth');
-                localStorage.setItem('active-server-url', url);
+                window.localStorage.setItem('active-server-url', url);
                 return setUserInfo(r);
             }
         }, function (e) {
@@ -62,85 +47,12 @@ $(document).ready(function() {
         checkValidation(serverUrl);
     });
     
-    getUserInfo(serverUrl);
     // ---------- END: Check Validation User ---------- //
 
     // -------------- Generate StandUp ---------------- //
     $('#getStandup').on('click', function () {
         generateStandUp();
     });
-
-    function get_yesterday() {
-        var today = new Date();
-        if (today.getDay() == 1) {
-            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 3)).slice(-2);
-        } else if (today.getDay() == 0) {
-            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 2)).slice(-2);
-        } else {
-            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 1)).slice(-2);
-        }
-    }
-    
-    function get_yesterday_issues_with_worklogs() {
-        return new Promise(resolve => {
-            var theUrl = serverUrl + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
-            httpGet('GET', theUrl).then(function(data) {
-                var issuesWithLogs = JSON.parse(data.target.response);
-                get_worklogs_from_issues(issuesWithLogs['issues']).then(function(data) {
-                    resolve(data);
-                });
-            }, function (e) {
-                alert(e);
-            });
-        });
-    }
-
-    function get_worklogs_from_issues(issues) {
-        return new Promise(async resolve => {
-            var comments = [];
-            issues.forEach(function(issue) {
-                get_worklogs_comments_from_issue(issue['key']).then(function(comment) {
-                    comments.push(comment);
-                });
-            });
-            setTimeout(() => {
-                resolve(comments);
-            }, 2000);
-        });
-    }
-
-    function get_worklogs_comments_from_issue(issueKey) {
-        var theUrl = serverUrl + '/rest/api/2/issue/' + issueKey + '/worklog';
-        var issueLink = serverUrl + '/browse/' + issueKey;
-        return new Promise(resolve => {
-            httpGet('GET', theUrl).then(function (data) {
-                var r = JSON.parse(data.target.response);
-                get_comments(r).then(function(comment) {
-                    var commentObj = {
-                        texts: comment,
-                        issueLink: issueLink
-                    }
-                    resolve(commentObj);
-                });
-            }, function (e) {
-                alert('Error: ' + e);
-            });
-        });
-    }
-
-    function get_comments(worklogs) {
-        var issuesWorklogList = worklogs['worklogs'];
-        return new Promise(resolve => {
-            var array = [];
-            issuesWorklogList.forEach(function (log) {
-                if (log['created'].slice(0, 10) == get_yesterday() &&
-                    userInfo['name'] == log['author']['name']) {
-                    array.push(log['comment']);
-                    resolve(array);
-                }
-            });
-        });
-    }
 
     function showStandUp(arrayText) {
         var texts = arrayText;
@@ -159,11 +71,12 @@ $(document).ready(function() {
         );
     }
 
-    async function generateStandUp() {
-        await get_yesterday_issues_with_worklogs().then(function(data) {
+    function generateStandUp() {
+        getWorklogs(serverUrl).then(function (data) {
+            console.log(data);
             showStandUp(data);
         });
-    }
+    };
     // ---------- END: Generate StandUp ---------- //
 
     // ------------ Main Function ----------- //
@@ -227,6 +140,7 @@ $(document).ready(function() {
             checkValidation(e.target.value);
         }
     });
+
     // -------------- INIT ---------------- //
     function init() {
         showSavedJiraUrl();
