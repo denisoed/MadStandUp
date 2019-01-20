@@ -64,6 +64,7 @@ $(document).ready(function() {
     
     getUserInfo(serverUrl);
     // ---------- END: Check Validation User ---------- //
+
     // -------------- Generate StandUp ---------------- //
     $('#getStandup').on('click', function () {
         generateStandUp();
@@ -110,11 +111,16 @@ $(document).ready(function() {
 
     function get_worklogs_comments_from_issue(issueKey) {
         var theUrl = serverUrl + '/rest/api/2/issue/' + issueKey + '/worklog';
+        var issueLink = serverUrl + '/browse/' + issueKey;
         return new Promise(resolve => {
             httpGet('GET', theUrl).then(function (data) {
                 var r = JSON.parse(data.target.response);
                 get_comments(r).then(function(comment) {
-                    resolve(comment);
+                    var commentObj = {
+                        texts: comment,
+                        issueLink: issueLink
+                    }
+                    resolve(commentObj);
                 });
             }, function (e) {
                 alert('Error: ' + e);
@@ -141,14 +147,14 @@ $(document).ready(function() {
         var yesterday = '';
         for (let i = 0; i < texts.length; i++) {
             var comment = '';
-            for (let j = 0; j < texts[i].length; j++) {
-                comment += texts[i][j] + ' ';
+            for (let j = 0; j < texts[i]['texts'].length; j++) {
+                comment += texts[i]['texts'][j] + ' ';
             }
-            yesterday += '- ' + comment.trim() + '\n';
+            yesterday += '- ' + comment.trim() + ' ' + texts[i]['issueLink'] + '\n';
         }
         $('#standup-text').text(
             'Доброе утро! @comedian\n\n*Вчера*\n' + yesterday +
-            '\n\n*Сегодня*\n -' +
+            '\n*Сегодня*\n -' +
             '\n\n*Проблемы*\n - Нет проблем!'
         );
     }
@@ -158,8 +164,8 @@ $(document).ready(function() {
             showStandUp(data);
         });
     }
-
     // ---------- END: Generate StandUp ---------- //
+
     // ------------ Main Function ----------- //
     $('#copyAll').on('click', function () {
         $(this).text('Copied');
