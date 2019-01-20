@@ -99,9 +99,7 @@ $(document).ready(function() {
             var comments = [];
             issues.forEach(function(issue) {
                 get_worklogs_comments_from_issue(issue['key']).then(function(comment) {
-                    comment.forEach(function(text) {
-                        comments.push(text);
-                    });
+                    comments.push(comment);
                 });
             });
             setTimeout(() => {
@@ -142,12 +140,16 @@ $(document).ready(function() {
         var texts = arrayText;
         var yesterday = '';
         for (let i = 0; i < texts.length; i++) {
-            yesterday += '- ' + texts[i] + '\n'
+            var comment = '';
+            for (let j = 0; j < texts[i].length; j++) {
+                comment += texts[i][j] + ' ';
+            }
+            yesterday += '- ' + comment + '\n';
         }
         $('#standup-text').text(
             'Доброе утро! @comedian\n\n*Вчера*\n' + yesterday +
             '\n\n*Сегодня*\n -' +
-            '\n\n*Проблемы*\n -'
+            '\n\n*Проблемы*\n - Нет проблем!'
         );
     }
 
@@ -167,6 +169,5 @@ $(document).ready(function() {
         var copyText = document.getElementById('standup-text');
         copyText.select();
         document.execCommand('copy');
-        alert('Text Copied');
     }
 });
