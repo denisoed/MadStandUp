@@ -14,6 +14,10 @@ $(document).ready(function() {
         });
     }
 
+    window.onbeforeunload = function () {
+        return false;
+    };
+
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
         $('#valid-user').removeClass('block--hide');
