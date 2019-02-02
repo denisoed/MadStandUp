@@ -33,6 +33,8 @@ export function checkUserAuth(url) {
             var response = JSON.parse(data.target.response);
             userInfo = response['issues'][0]['fields']['assignee'];
             resolve(response);
+        }).catch(function(e) {
+            reject(e);
         });
     });
 }

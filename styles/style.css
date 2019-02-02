@@ -223,6 +223,15 @@ textarea {
 }
 
 /* New syles */
+#loading {
+    width: 40px;
+    height: 40px;
+    position: fixed;
+    left: 10px;
+    top: 0;
+    display: none;
+    z-index: 1;
+}
 .add-server-wrap {
     width: 100%;
     display: flex;
@@ -251,8 +260,8 @@ textarea {
     align-items: center;
     justify-content: center;
     position: absolute;
-    right: 20px;
-    top: 20px;
+    right: 5px;
+    top: 5px;
     background-color: transparent;
     border: 0;
     cursor: pointer;
@@ -270,9 +279,9 @@ textarea {
 .add-server-wrap h5 {
     width: 250px;
     position: absolute;
-    top: 100px;
+    top: 42%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     color: #7883dc;
     font-size: 18px;
     text-align: center;
@@ -281,11 +290,25 @@ textarea {
     text-shadow: 2px 2px 5px rgba(28, 30, 36, .2);
     background-color: #fff;
 }
+
+.add-server-wrap .http-error {
+    width: 100%;
+    position: absolute;
+    top: -15px;
+    left: 18px;
+    color: red;
+    background-color: #fff;
+    margin: 0;
+    font-size: 11px;
+    z-index: 1;
+}
+
 .add-server {
     width: 310px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    position: relative;
     margin-left: auto;
     background-color: #6F56F9;
     padding: 3px;
@@ -296,6 +319,9 @@ textarea {
     transition: all .3s ease;
 }
 
+.add-server label {
+    width: 100%;
+}
 .add-server input {
     width: 100%;
     border: 0;
@@ -303,14 +329,16 @@ textarea {
     color: #fff;
     font-weight: 600;
     margin-right: 8px;
-    margin-left: 8px;
+    margin-left: 15px;
     z-index: 1;
     transition: all .3s ease;
+    font-size: 14px;
 }
 .add-server input::placeholder {
     color: #fff;
     font-weight: 500;
     font-style: italic;
+    font-size: 12px;
 }
 .add-server button {
     width: 35px;
@@ -353,6 +381,7 @@ textarea {
 }
 .add-server-wrap--disable .add-server__desc {
     opacity: 0;
+    z-index: -1;
 }
 .add-server-wrap--disable button {
     user-select: none;

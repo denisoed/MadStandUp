@@ -30,25 +30,50 @@ $(document).ready(function() {
         $(el).addClass('block--hide');
     }
     
-    function checkValidation(url) {
-        checkUserAuth(url).then(function (data) {
-            hideAuthError('.not-link');
-            if (data.status == 400) {
-                showAuthError('.not-auth');
-            } else {
-                hideAuthError('.not-auth');
+    async function checkValidation(url) {
+        var theUrl = url + '/rest/api/2/search?jql=assignee=currentuser()';
+        $.ajax({
+            url: theUrl,
+            success: function (data) {
+                hideLoader();
+                hideAuthError('.not-link');
                 window.localStorage.setItem('active-server-url', url);
-                return setUserInfo(data);
+            },
+            error: function (error) {
+                hideLoader();
+                if (error.status == 403 || error.status == 400) {
+                    showAuthError('.not-auth');
+                } else {
+                    showAuthError('.not-link');
+                }
             }
-        }, function (e) {
-            showAuthError('.not-link');
         });
     }
 
-    $('#checkConnectJira').on('click', function () {
+    $('#add-server').on('click', function () {
+        $('#add-server-wrap').removeClass('add-server-wrap--disable');
+        $('#add-server-wrap input').focus();
+    });
+
+    $('#add-server__close').on('click', function () {
+        hideAuthError('.not-link');
+        hideAuthError('.not-auth');
+        $('#add-server-wrap').addClass('add-server-wrap--disable');
+    });
+
+    $('#add-server__btn').on('click', function () {
         var serverUrl = $('#server-url').val();
+        showLoader();
         checkValidation(serverUrl);
     });
+
+    function showLoader() {
+        $('#loading').show();
+    }
+
+    function hideLoader() {
+        $('#loading').hide();
+    }
     
     // ---------- END: Check Validation User ---------- //
 
@@ -148,16 +173,4 @@ $(document).ready(function() {
         showSavedJiraUrl();
     }
     init();
-
-    // ----------- New ------------- //
-
-    $('#add-server').on('click', function() {
-        $('#add-server-wrap').removeClass('add-server-wrap--disable');
-        $('#add-server-wrap input').focus();
-    });
-
-    $('#add-server__close').on('click', function() {
-        $('#add-server-wrap').addClass('add-server-wrap--disable');
-    });
-
 });
