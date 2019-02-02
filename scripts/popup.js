@@ -148,4 +148,16 @@ $(document).ready(function() {
         showSavedJiraUrl();
     }
     init();
+
+    // ----------- New ------------- //
+
+    $('#add-server').on('click', function() {
+        $('#add-server-wrap').removeClass('add-server-wrap--disable');
+        $('#add-server-wrap input').focus();
+    });
+
+    $('#add-server__close').on('click', function() {
+        $('#add-server-wrap').addClass('add-server-wrap--disable');
+    });
+
 });
