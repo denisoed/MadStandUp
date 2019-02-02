@@ -1,12 +1,16 @@
 import {
     checkUserAuth,
-    getWorklogs
+    generateStandUp
 } from './api.js';
 
 
 $(document).ready(function() {
 
     var serverUrl = window.localStorage.getItem('active-server-url');
+
+    window.onbeforeunload = function () {
+        return false;
+    };
 
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
@@ -29,13 +33,12 @@ $(document).ready(function() {
     function checkValidation(url) {
         checkUserAuth(url).then(function (data) {
             hideAuthError('.not-link');
-            var r = JSON.parse(data.target.response);
             if (data.status == 400) {
                 showAuthError('.not-auth');
             } else {
                 hideAuthError('.not-auth');
                 window.localStorage.setItem('active-server-url', url);
-                return setUserInfo(r);
+                return setUserInfo(data);
             }
         }, function (e) {
             showAuthError('.not-link');
@@ -51,18 +54,19 @@ $(document).ready(function() {
 
     // -------------- Generate StandUp ---------------- //
     $('#getStandup').on('click', function () {
-        generateStandUp();
+        getStandUp();
     });
 
     function showStandUp(arrayText) {
-        var texts = arrayText;
+        
+        var texts = arrayText.reverse();
         var yesterday = '';
         for (let i = 0; i < texts.length; i++) {
             var comment = '';
-            for (let j = 0; j < texts[i]['texts'].length; j++) {
-                comment += texts[i]['texts'][j] + ' ';
+            for (let j = 0; j < texts[i]['comments'].length; j++) {
+                comment += texts[i]['comments'][j] + ' ';
             }
-            yesterday += '- ' + comment.trim() + ' ' + texts[i]['issueLink'] + '\n';
+            yesterday += '- ' + comment.trim() + ' ' + texts[i]['link'] + '\n';
         }
         $('#standup-text').text(
             'Доброе утро! @comedian\n\n*Вчера*\n' + yesterday +
@@ -71,12 +75,10 @@ $(document).ready(function() {
         );
     }
 
-    function generateStandUp() {
-        getWorklogs(serverUrl).then(function (data) {
-            console.log(data);
-            showStandUp(data);
-        });
-    };
+    async function getStandUp() {
+        var standup = await generateStandUp();
+        showStandUp(standup);
+    }
     // ---------- END: Generate StandUp ---------- //
 
     // ------------ Main Function ----------- //
