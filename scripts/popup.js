@@ -1,7 +1,4 @@
-import {
-    checkUserAuth,
-    generateStandUp
-} from './api.js';
+import { generateStandUp } from './api.js';
 
 
 $(document).ready(function() {
@@ -178,9 +175,16 @@ $(document).ready(function() {
                 '</div>'
             );
         }
+        if ($('#saved-servers').is(':empty')) {
+            $('#saved-servers').html(
+                '<h5 class="saved-servers--empty">Server list is empty</h5>'
+            );
+            return false;
+        }
     }
 
     $('#saved-servers').on('click', function (e) {
+        showLoader();
         if (e.target.className == 'saved-servers__btn') {
             checkValidation(e.target.value);
         } else if (e.target.className == 'remove-servers-btn') {
