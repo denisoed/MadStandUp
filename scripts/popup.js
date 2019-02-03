@@ -15,7 +15,7 @@ $(document).ready(function() {
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
         $('#valid-user').removeClass('block--hide');
-        $('#wrap-no-valid').addClass('block--hide');
+        $('#first-step').addClass('block--hide');
         $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
@@ -38,6 +38,7 @@ $(document).ready(function() {
                 hideLoader();
                 hideAuthError('.not-link');
                 window.localStorage.setItem('active-server-url', url);
+                setUserInfo(data);
             },
             error: function (error) {
                 hideLoader();
@@ -128,7 +129,7 @@ $(document).ready(function() {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
         var server = {};
 
-        if (jiraServers == null) {
+        if (Object.keys(jiraServers).length == 0) {
             server = {
                 0: url
             };
@@ -147,6 +148,14 @@ $(document).ready(function() {
             }
         }
     }
+    
+    function removeSavedServer(url) {
+        var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
+        var values = Object.values(jiraServers);
+        delete jiraServers[values.indexOf(url)];
+        window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
+        showSavedJiraUrl();
+    }
 
     function getSavedJiraUrl() {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
@@ -155,16 +164,27 @@ $(document).ready(function() {
 
     function showSavedJiraUrl() {
         var servers = getSavedJiraUrl();
+        $('#saved-servers').empty();
         for (let i = 0; i < servers.length; i++) {
             $('#saved-servers').append(
-                '<button class="saved-servers__btn check-connect-jira" value="' + servers[i] + '">' + servers[i] + '</button>'
+                '<div class="servers-btn">' +
+                    '<button class="saved-servers__btn" value="' + servers[i] + '">'
+                        + servers[i] +
+                    '</button>' +
+                    '<button class="remove-servers-btn" value="'
+                        + servers[i] + '">' +
+                        '<img src="img/bucket.svg" alt="Remove">' +
+                    '</button>' +
+                '</div>'
             );
         }
     }
 
     $('#saved-servers').on('click', function (e) {
-        if (e.target.nodeName == 'BUTTON') {
+        if (e.target.className == 'saved-servers__btn') {
             checkValidation(e.target.value);
+        } else if (e.target.className == 'remove-servers-btn') {
+            removeSavedServer(e.target.value);
         }
     });
 

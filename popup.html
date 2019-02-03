@@ -10,7 +10,7 @@
   <body>
     <div class="container" id="popup-container">
       <img id="loading" src="img/loading.svg" alt="Loading">
-      <h1>StandUpMan</h1>
+      <h1>S</h1>
       <div id="valid-user" class="valid-user block--hide">
         <div id="user_info">
           <div class="wrap-userAvatar">
@@ -22,32 +22,33 @@
           </div>
         </div>
         <div class="valid-user_btns">
-          <a class="check-connect-jira" href="newtab.html" target="_blank">Get StandUp</a>
+          <a class="check-connect-jira" id="getStandup" href="newtab.html" target="_blank">Get StandUp</a>
           <button id="rememberJiraUrl">Remember jira url</button>
         </div>
       </div>
-      <div id="wrap-no-valid" class="wrap-no-valid">
-        <div id="no-valid-server" class="no-valid-server">
-        </div>
+      
+      <div id="first-step">   
+        <!-- Saved servers-->
         <div id="saved-servers"></div>
+        
+        <!-- Block for add jira server -->
+        <div id="add-server-wrap" class="add-server-wrap add-server-wrap--disable">
+          <button id="add-server__close" class="add-server__close">
+            <img src="img/close.svg" alt="New server">
+          </button>
+          <h5 class="add-server__desc">Please, add a link to the jira server to generate a stand-up</h5>
+          <div id="add-server" class="add-server">
+            <p class="http-error not-link block--hide">Please, add jira url!</p>
+            <p class="http-error not-auth block--hide">Please, login to the inserted link!</p>
+            <input type="text" id="server-url" name="server" placeholder="Example: https://my-jira.atlassian.net">
+            <button id="add-server__btn">
+              <img src="img/add.svg" alt="New server">
+            </button>
+          </div>
+        </div>
+        <!-- END block -->
       </div>
 
-      <!-- Block for add jira server -->
-      <div id="add-server-wrap" class="add-server-wrap add-server-wrap--disable">
-        <button id="add-server__close" class="add-server__close">
-          <img src="img/close.svg" alt="New server">
-        </button>
-        <h5 class="add-server__desc">Please, add a link to the jira server to generate a stand-up</h5>
-        <div id="add-server" class="add-server">
-          <p class="http-error not-link block--hide">Please, add jira url!</p>
-          <p class="http-error not-auth block--hide">Please, login to the inserted link!</p>
-          <input type="text" id="server-url" name="server" placeholder="Example: https://my-jira.atlassian.net">
-          <button id="add-server__btn">
-            <img src="img/add.svg" alt="New server">
-          </button>
-        </div>
-      </div>
-      <!-- END block -->
 
     </div>
   </body>
