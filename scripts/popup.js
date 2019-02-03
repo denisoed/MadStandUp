@@ -1,7 +1,4 @@
-import {
-    checkUserAuth,
-    generateStandUp
-} from './api.js';
+import { generateStandUp } from './api.js';
 
 
 $(document).ready(function() {
@@ -15,7 +12,7 @@ $(document).ready(function() {
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
         $('#valid-user').removeClass('block--hide');
-        $('#wrap-no-valid').addClass('block--hide');
+        $('#first-step').addClass('block--hide');
         $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
@@ -30,26 +27,20 @@ $(document).ready(function() {
         $(el).addClass('block--hide');
     }
     
-    function checkValidation(url) {
-        checkUserAuth(url).then(function (data) {
-            hideAuthError('.not-link');
-            if (data.status == 400) {
-                showAuthError('.not-auth');
-            } else {
-                hideAuthError('.not-auth');
-                window.localStorage.setItem('active-server-url', url);
-                return setUserInfo(data);
-            }
-        }, function (e) {
-            showAuthError('.not-link');
+    async function checkValidation(url) {
+        var theUrl = url + '/rest/api/2/search?jql=assignee=currentuser()';
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: theUrl,
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function (error) {
+                    reject(error);
+                }
+            });
         });
     }
-
-    $('#checkConnectJira').on('click', function () {
-        var serverUrl = $('#server-url').val();
-        checkValidation(serverUrl);
-    });
-    
     // ---------- END: Check Validation User ---------- //
 
     // -------------- Generate StandUp ---------------- //
@@ -58,9 +49,9 @@ $(document).ready(function() {
     });
 
     function showStandUp(arrayText) {
-        
         var texts = arrayText.reverse();
         var yesterday = '';
+        hideLoader();
         for (let i = 0; i < texts.length; i++) {
             var comment = '';
             for (let j = 0; j < texts[i]['comments'].length; j++) {
@@ -76,16 +67,20 @@ $(document).ready(function() {
     }
 
     async function getStandUp() {
+        showLoader();
         var standup = await generateStandUp();
         showStandUp(standup);
     }
     // ---------- END: Generate StandUp ---------- //
 
     // ------------ Main Function ----------- //
-    $('#copyAll').on('click', function () {
-        $(this).text('Copied');
-        copyAll();
-    });
+    function showLoader() {
+        $('#loading').show();
+    }
+
+    function hideLoader() {
+        $('#loading').hide();
+    }
 
     function copyAll() {
         var copyText = document.getElementById('standup-text');
@@ -93,17 +88,11 @@ $(document).ready(function() {
         document.execCommand('copy');
     }
 
-    $('#rememberJiraUrl').on('click', function () {
-        $(this).text('Saved!');
-        var insertedUrl = $('#server-url').val();
-        rememberJiraUrl(insertedUrl);
-    });
-
     function rememberJiraUrl(url) {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
         var server = {};
 
-        if (jiraServers == null) {
+        if (Object.keys(jiraServers).length == 0) {
             server = {
                 0: url
             };
@@ -117,10 +106,18 @@ $(document).ready(function() {
                     window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
                     break;
                 } else {
-                    alert('Url exist');
+                    return false;
                 }
             }
         }
+    }
+    
+    function removeSavedServer(url) {
+        var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
+        var urlID = Object.keys(jiraServers).find(key => jiraServers[key] === url);
+        delete jiraServers[urlID];
+        window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
+        showSavedJiraUrl();
     }
 
     function getSavedJiraUrl() {
@@ -130,22 +127,91 @@ $(document).ready(function() {
 
     function showSavedJiraUrl() {
         var servers = getSavedJiraUrl();
+        $('#saved-servers').empty();
         for (let i = 0; i < servers.length; i++) {
             $('#saved-servers').append(
-                '<button class="saved-servers__btn check-connect-jira" value="' + servers[i] + '">' + servers[i] + '</button>'
+                '<div class="servers-btn">' +
+                    '<button class="saved-servers__btn" value="' + servers[i] + '">'
+                        + servers[i] +
+                    '</button>' +
+                    '<button class="remove-servers-btn" value="'
+                        + servers[i] + '">' +
+                        '<img src="img/bucket.svg" alt="Remove">' +
+                    '</button>' +
+                '</div>'
             );
+        }
+        if ($('#saved-servers').is(':empty')) {
+            $('#saved-servers').html(
+                '<h5 class="saved-servers--empty">Server list is empty</h5>'
+            );
+            return false;
         }
     }
 
     $('#saved-servers').on('click', function (e) {
-        if (e.target.nodeName == 'BUTTON') {
-            checkValidation(e.target.value);
+        if (e.target.className == 'saved-servers__btn') {
+            showLoader();
+            checkValidation(e.target.value).then(function (data) {
+                hideLoader();
+                setUserInfo(data);
+            }).catch(function (error) {
+                hideLoader();
+                showAuthError('.not-auth');
+            });
+        } else if (e.target.className == 'remove-servers-btn') {
+            removeSavedServer(e.target.value);
+        }
+    });
+
+    $('#copyAll').on('click', function () {
+        $(this).text('Copied');
+        copyAll();
+    });
+
+    $('#rememberJiraUrl').on('click', function () {
+        $(this).text('Saved!');
+        var insertedUrl = $('#server-url').val();
+        rememberJiraUrl(insertedUrl);
+    });
+
+    $('#add-server').on('click', function () {
+        $('#add-server-wrap').removeClass('add-server-wrap--disable');
+        $('#add-server-wrap input').focus();
+    });
+
+    $('#add-server__close').on('click', function () {
+        hideAuthError('.http-error');
+        $('#add-server-wrap').addClass('add-server-wrap--disable');
+    });
+
+    $('#add-server__btn').on('click', function () {
+        var serverUrl = $('#server-url').val();
+        var isServer = rememberJiraUrl(serverUrl);
+        showLoader();
+        if (isServer != false) {
+            checkValidation(serverUrl).then(function(data) {
+                hideLoader();
+                hideAuthError('.not-link');
+                rememberJiraUrl(serverUrl);
+                window.localStorage.setItem('active-server-url', serverUrl);
+                setUserInfo(data);
+            }).catch(function(error) {
+                hideLoader();
+                if (error.status == 403 || error.status == 400) {
+                    showAuthError('.not-auth');
+                } else {
+                    showAuthError('.not-link');
+                }
+            });
+        } else {
+            hideLoader();
+            showAuthError('.url-exist');
         }
     });
 
     // -------------- INIT ---------------- //
-    function init() {
+    (function init() {
         showSavedJiraUrl();
-    }
-    init();
+    })();
 });
