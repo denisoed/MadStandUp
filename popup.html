@@ -24,8 +24,7 @@
           </div>
         </div>
         <div class="valid-user_btns">
-          <a class="check-connect-jira" id="getStandup" href="newtab.html" target="_blank">Get StandUp</a>
-          <button id="rememberJiraUrl">Remember jira url</button>
+          <a class="go-get-standup" id="getStandup" href="newtab.html" target="_blank">Get StandUp</a>
         </div>
       </div>
       
@@ -42,6 +41,7 @@
           <div id="add-server" class="add-server">
             <p class="http-error not-link block--hide">Please, add jira url!</p>
             <p class="http-error not-auth block--hide">Please, login to the inserted link!</p>
+            <p class="http-error url-exist block--hide">URL already exists</p>
             <input type="text" id="server-url" name="server" placeholder="Example: https://my-jira.atlassian.net">
             <button id="add-server__btn">
               <img src="img/add.svg" alt="New server">
