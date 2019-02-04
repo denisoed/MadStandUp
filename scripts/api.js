@@ -43,7 +43,10 @@ export async function generateStandUp() {
     await checkUserAuth(serverUrl);
     var issues = await get_issues_with_worklogs();
     var keys = await get_issues_keys(issues);
-    var worklogs = await get_worklogs_comments_from_issues(keys);
+    var worklogs = [];
+    for (const key of keys) {
+        worklogs.push(await get_worklogs_comments_from_issues(key));
+    }
     var comments = await get_currentUser_comments(worklogs);
     return comments;
 }
@@ -70,24 +73,19 @@ function get_issues_keys(issues) {
     });
 };
 
-function get_worklogs_comments_from_issues(issueKey) {
+function get_worklogs_comments_from_issues(key) {
     return new Promise(resolve => {
-        var comments = [];
-        issueKey.forEach(function (key) {
-            var theUrl = serverUrl + '/rest/api/2/issue/' + key + '/worklog';
-            var issueLink = serverUrl + '/browse/' + key;
-            $.ajax({
-                url: theUrl,
-                async: false,
-                success: function (data) {
-                    var commentObj = {
-                        comments: data['worklogs'],
-                        link: issueLink
-                    }
-                    comments.push(commentObj);
-                    resolve(comments);
+        var theUrl = serverUrl + '/rest/api/2/issue/' + key + '/worklog';
+        var issueLink = serverUrl + '/browse/' + key;
+        $.ajax({
+            url: theUrl,
+            success: function (data) {
+                var commentObj = {
+                    comments: data['worklogs'],
+                    link: issueLink
                 }
-            });
+                resolve(commentObj);
+            }
         });
     });
 };
