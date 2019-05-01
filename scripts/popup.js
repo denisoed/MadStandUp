@@ -92,7 +92,7 @@ $(document).ready(function() {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
         var server = {};
 
-        if (Object.keys(jiraServers).length == 0) {
+        if (jiraServers == null || Object.keys(jiraServers).length == 0) {
             server = {
                 0: url
             };
