@@ -91,22 +91,23 @@ $(document).ready(function() {
     function rememberJiraUrl(url) {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
         var server = {};
-
-        if (jiraServers == null || Object.keys(jiraServers).length == 0) {
-            server = {
-                0: url
-            };
-            window.localStorage.setItem('jira-servers', JSON.stringify(server));
-        } else {
-            var keys = Object.keys(jiraServers);
-            var values = Object.values(jiraServers);
-            for (let i = 0; i < values.length; i++) {
-                if (jiraServers[i] != url) {
-                    jiraServers[Number(keys[keys.length-1]) + 1] = url;
-                    window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
-                    break;
-                } else {
-                    return false;
+        if (url != '') {
+            if (jiraServers == null || Object.keys(jiraServers).length == 0) {
+                server = {
+                    0: url
+                };
+                window.localStorage.setItem('jira-servers', JSON.stringify(server));
+            } else {
+                var keys = Object.keys(jiraServers);
+                var values = Object.values(jiraServers);
+                for (let i = 0; i < values.length; i++) {
+                    if (jiraServers[i] != url) {
+                        jiraServers[Number(keys[keys.length-1]) + 1] = url;
+                        window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
+                        break;
+                    } else {
+                        return false;
+                    }
                 }
             }
         }
