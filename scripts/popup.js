@@ -177,6 +177,12 @@ $(document).ready(function() {
         copyAll();
     });
 
+    $('#go-auth-step').on('click', function () {
+        $('#valid-user').addClass('block--hide');
+        $('#first-step').removeClass('block--hide');
+        showSavedJiraUrl();
+    });
+
     $('#rememberJiraUrl').on('click', function () {
         $(this).text('Saved!');
         var insertedUrl = $('#server-url').val();
@@ -220,6 +226,13 @@ $(document).ready(function() {
 
     // -------------- INIT ---------------- //
     (function init() {
-        showSavedJiraUrl();
+        showLoader();
+        checkValidation(serverUrl).then(function (data) {
+            hideLoader();
+            setUserInfo(data);
+        }).catch(function (error) {
+            hideLoader();
+            showSavedJiraUrl();
+        });
     })();
 });
