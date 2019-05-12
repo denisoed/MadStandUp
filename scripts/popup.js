@@ -157,7 +157,7 @@ $(document).ready(function() {
                 setUserInfo(data);
             }).catch(function (error) {
                 hideLoader();
-                showAuthError('.not-auth');
+                showAuthError('.please-auth');
             });
         } else if (e.target.className == 'remove-servers-btn') {
             removeSavedServer(e.target.value);
