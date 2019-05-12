@@ -113,6 +113,9 @@ h1, h2 h3, h4, h5, h6 {
 
 #user_info .userName, .userMail {
     font-size: 12px;
+}
+
+#user_info .userMail {
     margin-top: 7px;
 }
 
@@ -513,4 +516,19 @@ textarea {
     transition: all .3s ease;
     text-shadow: 2px 2px 5px rgba(28, 30, 36, .2);
     background-color: #fff;
+}
+
+.work-info {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.work-info p {
+    margin: 0;
+    margin-right: 6px;
+}
+
+.work-info h5 {
+    font-size: 12px;
 }

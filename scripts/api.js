@@ -11,18 +11,34 @@ function httpGet(method, url) {
     });
 }
 
-function get_yesterday() {
+function secondsToHms(sec) {
+    sec = Number(sec);
+    var h = Math.floor(sec / 3600);
+    var m = Math.floor(sec % 3600 / 60);
+    var s = Math.floor(sec % 3600 % 60);
+
+    var hDisplay = h > 0 ? h + 'h ' : '';
+    var mDisplay = m > 0 ? m + 'm ' : '';
+    var sDisplay = s > 0 ? s + 's' : '';
+    return hDisplay + mDisplay + sDisplay;
+}
+
+function get_yesterday(isToday = false) {
     var today = new Date();
-    if (today.getDay() == 1) {
-        return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 3)).slice(-2);
-    } else if (today.getDay() == 0) {
-        return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 2)).slice(-2);
-    } else if (today.getDate() == 1) {
-        var prevMonth = today.setDate(today.getDate() - 1);
-        var yesterday = new Date(prevMonth);
-        return yesterday.getUTCFullYear() + '-' + ('0' + (yesterday.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (yesterday.getDate())).slice(-2);
+    if (isToday) {
+        return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
     } else {
-        return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 1)).slice(-2);
+        if (today.getDay() == 1) {
+            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 3)).slice(-2);
+        } else if (today.getDay() == 0) {
+            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 2)).slice(-2);
+        } else if (today.getDate() == 1) {
+            var prevMonth = today.setDate(today.getDate() - 1);
+            var yesterday = new Date(prevMonth);
+            return yesterday.getUTCFullYear() + '-' + ('0' + (yesterday.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (yesterday.getDate())).slice(-2);
+        } else {
+            return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 1)).slice(-2);
+        }
     }
 }
 
@@ -57,6 +73,26 @@ function get_issues_with_worklogs() {
         httpGet('GET', theUrl).then(function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
             resolve(issuesWithLogs['issues']);
+        }, function (e) {
+            alert(e);
+        });
+    });
+};
+
+export function get_issues_with_today_worklogs() {
+    return new Promise(resolve => {
+        var theUrl = serverUrl + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+        httpGet('GET', theUrl).then(function (data) {
+            var issuesWithLogs = JSON.parse(data.target.response);
+            var todayLogs = 0;
+            issuesWithLogs['issues'].forEach(issue => {
+                issue.fields.worklog.worklogs.forEach(log => {
+                    if (log.updated.slice(0, 10) == get_yesterday()) {
+                        todayLogs += Number(log.timeSpentSeconds);
+                    }
+                });
+            });
+            resolve(secondsToHms(todayLogs));
         }, function (e) {
             alert(e);
         });
