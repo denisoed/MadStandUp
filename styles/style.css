@@ -313,13 +313,22 @@ textarea {
 
 .go-auth-step {
     position: absolute;
-    left: 15px;
-    top: 15px;
+    left: 20px;
+    top: 17px;
 }
 
 .go-auth-step img {
     width: 12px;
     height: 12px;
+}
+
+.jira-key {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    margin: 0;
+    font-weight: bold;
+    color: #6F56F9;
 }
 
 .add-server-wrap h5 {

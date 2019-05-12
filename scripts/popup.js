@@ -19,6 +19,7 @@ $(document).ready(function() {
         $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
+        $('#jira-key').text(data['issues'][0]['key'].replace(/[^a-zA-Z]+/g, ''));
         get_issues_with_today_worklogs().then(data => {
             $('#work-logged').text(data);
         });
