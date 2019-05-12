@@ -40,6 +40,7 @@ h1, h2 h3, h4, h5, h6 {
 .container {
     width: auto;
     height: auto;
+    min-height: 240px;
     padding: 20px;
     padding-top: 0;
     box-sizing: border-box;
