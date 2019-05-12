@@ -1,4 +1,7 @@
-import { generateStandUp } from './api.js';
+import {
+    generateStandUp,
+    get_issues_with_today_worklogs
+} from './api.js';
 
 
 $(document).ready(function() {
@@ -16,6 +19,9 @@ $(document).ready(function() {
         $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
+        get_issues_with_today_worklogs().then(data => {
+            $('#work-logged').text(data);
+        });
         return userName;
     }
 
