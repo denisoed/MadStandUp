@@ -117,7 +117,7 @@ h1, h2 h3, h4, h5, h6 {
 }
 
 .block--hide {
-    display: none !important;
+    display: none;
 }
 
 /* ----------------------- */
@@ -171,12 +171,17 @@ h1, h2 h3, h4, h5, h6 {
     flex-direction: column;
 }
 
-.no-valid-server .server-url-label .http-error {
+.http-error {
     width: 100%;
     color: red;
     font-size: 11px;
     margin: 0;
     margin-bottom: 4px;
+}
+
+.please-auth {
+    margin-top: -4px;
+    margin-left: 14px;
 }
 
 .no-valid-server .server-url-label input {

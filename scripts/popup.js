@@ -91,22 +91,23 @@ $(document).ready(function() {
     function rememberJiraUrl(url) {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
         var server = {};
-
-        if (jiraServers == null || Object.keys(jiraServers).length == 0) {
-            server = {
-                0: url
-            };
-            window.localStorage.setItem('jira-servers', JSON.stringify(server));
-        } else {
-            var keys = Object.keys(jiraServers);
-            var values = Object.values(jiraServers);
-            for (let i = 0; i < values.length; i++) {
-                if (jiraServers[i] != url) {
-                    jiraServers[Number(keys[keys.length-1]) + 1] = url;
-                    window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
-                    break;
-                } else {
-                    return false;
+        if (url != '') {
+            if (jiraServers == null || Object.keys(jiraServers).length == 0) {
+                server = {
+                    0: url
+                };
+                window.localStorage.setItem('jira-servers', JSON.stringify(server));
+            } else {
+                var keys = Object.keys(jiraServers);
+                var values = Object.values(jiraServers);
+                for (let i = 0; i < values.length; i++) {
+                    if (jiraServers[i] != url) {
+                        jiraServers[Number(keys[keys.length-1]) + 1] = url;
+                        window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
+                        break;
+                    } else {
+                        return false;
+                    }
                 }
             }
         }
@@ -130,6 +131,7 @@ $(document).ready(function() {
         $('#saved-servers').empty();
         for (let i = 0; i < servers.length; i++) {
             $('#saved-servers').append(
+                '<p class="http-error please-auth block--hide">Please, login to the link!</p>' +
                 '<div class="servers-btn">' +
                     '<button class="saved-servers__btn" value="' + servers[i] + '">'
                         + servers[i] +
@@ -157,7 +159,7 @@ $(document).ready(function() {
                 setUserInfo(data);
             }).catch(function (error) {
                 hideLoader();
-                showAuthError('.not-auth');
+                $(e.target).parent().prev().show();
             });
         } else if (e.target.className == 'remove-servers-btn') {
             removeSavedServer(e.target.value);
