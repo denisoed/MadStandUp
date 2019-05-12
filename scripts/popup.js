@@ -130,6 +130,7 @@ $(document).ready(function() {
         $('#saved-servers').empty();
         for (let i = 0; i < servers.length; i++) {
             $('#saved-servers').append(
+                '<p class="http-error please-auth block--hide">Please, login to the link!</p>' +
                 '<div class="servers-btn">' +
                     '<button class="saved-servers__btn" value="' + servers[i] + '">'
                         + servers[i] +
@@ -157,7 +158,7 @@ $(document).ready(function() {
                 setUserInfo(data);
             }).catch(function (error) {
                 hideLoader();
-                showAuthError('.please-auth');
+                $(e.target).parent().prev().show();
             });
         } else if (e.target.className == 'remove-servers-btn') {
             removeSavedServer(e.target.value);
