@@ -20,6 +20,9 @@ function secondsToHms(sec) {
     var hDisplay = h > 0 ? h + 'h ' : '';
     var mDisplay = m > 0 ? m + 'm ' : '';
     var sDisplay = s > 0 ? s + 's' : '';
+    if (hDisplay == '' && mDisplay == '' && sDisplay == '') {
+        return '0h';
+    }
     return hDisplay + mDisplay + sDisplay;
 }
 
@@ -81,7 +84,7 @@ function get_issues_with_worklogs() {
 
 export function get_issues_with_today_worklogs() {
     return new Promise(resolve => {
-        var theUrl = serverUrl + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+        var theUrl = serverUrl + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday(true) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
         httpGet('GET', theUrl).then(function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
             var todayLogs = 0;
