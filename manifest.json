@@ -9,6 +9,10 @@
         "default_title": "StandUpMan",
         "default_popup": "popup.html"
     },
+    "background": {
+        "scripts": ["scripts/background.js"],
+        "persistent": false
+    },
     "permissions": [
         "tabs",
         "notifications",
