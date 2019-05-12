@@ -222,4 +222,16 @@ $(document).ready(function() {
     (function init() {
         showSavedJiraUrl();
     })();
+
+    // -------------- Features ---------------- //
+    $('#translate').click(async e => {
+        const text = $('#standup-text').text();
+        const en = await translate(text, {
+            engine: 'yandex',
+            key: 'API KEY',
+            from: 'ru',
+            to: 'en'
+        });
+        $('#standup-text').text(en);
+    });
 });
