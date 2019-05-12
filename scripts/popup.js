@@ -7,6 +7,26 @@ import {
 $(document).ready(function() {
 
     var serverUrl = window.localStorage.getItem('active-server-url');
+    var notifOpt = {
+        type: 'list',
+        title: 'Primary Title',
+        message: 'Primary message to display',
+        priority: 1,
+        iconUrl: 'img/bg.jpg',
+        items: [{
+                title: 'Item1',
+                message: 'This is item 1.'
+            },
+            {
+                title: 'Item2',
+                message: 'This is item 2.'
+            },
+            {
+                title: 'Item3',
+                message: 'This is item 3.'
+            }
+        ]
+    };
 
     window.onbeforeunload = function () {
         return false;
@@ -21,6 +41,9 @@ $(document).ready(function() {
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
         get_issues_with_today_worklogs().then(data => {
             $('#work-logged').text(data);
+            chrome.notifications.create('notify1', notifOpt, function () {
+                console.log('created!');
+            });
         });
         return userName;
     }
