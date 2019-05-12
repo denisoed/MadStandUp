@@ -159,7 +159,7 @@ $(document).ready(function() {
                 setUserInfo(data);
             }).catch(function (error) {
                 hideLoader();
-                $(e.target).parent().prev().show();
+                $(e.target).parent().prev().removeClass('block--hide');
             });
         } else if (e.target.className == 'remove-servers-btn') {
             removeSavedServer(e.target.value);
