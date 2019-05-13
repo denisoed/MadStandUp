@@ -154,6 +154,7 @@ $(document).ready(function() {
             $('#saved-servers').html(
                 '<h5 class="saved-servers--empty">Server list is empty</h5>'
             );
+            window.localStorage.setItem('active-server-url', '');
             return false;
         }
     }
@@ -233,6 +234,7 @@ $(document).ready(function() {
             setUserInfo(data);
         }).catch(function (error) {
             hideLoader();
+            $('#first-step').removeClass('block--hide');
             showSavedJiraUrl();
         });
     })();
