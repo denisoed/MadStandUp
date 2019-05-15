@@ -164,6 +164,7 @@ $(document).ready(function() {
             showLoader();
             checkValidation(e.target.value).then(function (data) {
                 hideLoader();
+                window.localStorage.setItem('active-server-url', e.target.value);
                 setUserInfo(data);
             }).catch(function (error) {
                 hideLoader();
