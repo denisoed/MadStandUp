@@ -90,7 +90,7 @@ export function get_issues_with_today_worklogs() {
             var todayLogs = 0;
             issuesWithLogs['issues'].forEach(issue => {
                 issue.fields.worklog.worklogs.forEach(log => {
-                    if (log.updated.slice(0, 10) == get_yesterday()) {
+                    if (log.updated.slice(0, 10) == get_yesterday(true)) {
                         todayLogs += Number(log.timeSpentSeconds);
                     }
                 });
