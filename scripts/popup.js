@@ -108,15 +108,10 @@ $(document).ready(function() {
             } else {
                 var keys = Object.keys(jiraServers);
                 var values = Object.values(jiraServers);
-                for (let i = 0; i < values.length; i++) {
-                    if (jiraServers[i] != url) {
-                        jiraServers[Number(keys[keys.length - 1]) + 1] = url;
-                        window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
-                        return response;
-                    } else {
-                        return false;
-                    }
+                if (values.includes(url)) {
+                    return false;
                 }
+                window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
             }
         }).catch(function (error) {
             return error;
