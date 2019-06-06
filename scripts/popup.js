@@ -14,14 +14,14 @@ $(document).ready(function() {
 
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
-        $('#valid-user').removeClass('block--hide');
-        $('#first-step').addClass('block--hide');
-        $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
-        $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
-        $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
-        $('#jira-key').text(data['issues'][0]['key'].replace(/[^a-zA-Z]+/g, ''));
-        get_issues_with_today_worklogs().then(data => {
-            $('#work-logged').text(data);
+        get_issues_with_today_worklogs().then(function (timeLogged) {
+            $('#work-logged').text(timeLogged);
+            $('#valid-user').removeClass('block--hide');
+            $('#first-step').addClass('block--hide');
+            $('#userAvatar').attr("src", data['issues'][0]['fields']['assignee']['avatarUrls']['48x48']);
+            $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
+            $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
+            $('#jira-key').text(data['issues'][0]['key'].replace(/[^a-zA-Z]+/g, ''));
         });
         return userName;
     }
@@ -98,26 +98,25 @@ $(document).ready(function() {
     function rememberJiraUrl(url) {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
         var server = {};
-        if (url != '') {
+        var isValid = checkValidation(url).then(function (response) {
             if (jiraServers == null || Object.keys(jiraServers).length == 0) {
                 server = {
                     0: url
                 };
                 window.localStorage.setItem('jira-servers', JSON.stringify(server));
+                return response;
             } else {
                 var keys = Object.keys(jiraServers);
                 var values = Object.values(jiraServers);
-                for (let i = 0; i < values.length; i++) {
-                    if (jiraServers[i] != url) {
-                        jiraServers[Number(keys[keys.length-1]) + 1] = url;
-                        window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
-                        break;
-                    } else {
-                        return false;
-                    }
+                if (values.includes(url)) {
+                    return false;
                 }
+                window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
             }
-        }
+        }).catch(function (error) {
+            return error;
+        });
+        return isValid;
     }
     
     function removeSavedServer(url) {
@@ -130,27 +129,31 @@ $(document).ready(function() {
 
     function getSavedJiraUrl() {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
+        if (jiraServers == null) {
+            return [];
+        }
         return Object.values(jiraServers);
     }
 
     function showSavedJiraUrl() {
         var servers = getSavedJiraUrl();
         $('#saved-servers').empty();
-        for (let i = 0; i < servers.length; i++) {
-            $('#saved-servers').append(
-                '<p class="http-error please-auth block--hide">Please, login to the link!</p>' +
-                '<div class="servers-btn">' +
-                    '<button class="saved-servers__btn" value="' + servers[i] + '">'
-                        + servers[i] +
-                    '</button>' +
-                    '<button class="remove-servers-btn" value="'
-                        + servers[i] + '">' +
-                        '<img src="img/bucket.svg" alt="Remove">' +
-                    '</button>' +
-                '</div>'
-            );
-        }
-        if ($('#saved-servers').is(':empty')) {
+        if (servers.length > 0) {
+            for (let i = 0; i < servers.length; i++) {
+                $('#saved-servers').append(
+                    '<p class="http-error please-auth block--hide">Please, login to the link!</p>' +
+                    '<div class="servers-btn">' +
+                        '<button class="saved-servers__btn" value="' + servers[i] + '">'
+                            + servers[i] +
+                        '</button>' +
+                        '<button class="remove-servers-btn" value="'
+                            + servers[i] + '">' +
+                            '<img src="img/bucket.svg" alt="Remove">' +
+                        '</button>' +
+                    '</div>'
+                );
+            }
+        } else {
             $('#saved-servers').html(
                 '<h5 class="saved-servers--empty">Server list is empty</h5>'
             );
@@ -195,6 +198,11 @@ $(document).ready(function() {
     $('#add-server').on('click', function () {
         $('#add-server-wrap').removeClass('add-server-wrap--disable');
         $('#add-server-wrap input').focus();
+        $(document).on('keyup', function(e) {
+            if (e.keyCode == 13 && $('#add-server-wrap input').val() != '') {
+                addNewJira();
+            }
+        });
     });
 
     $('#add-server__close').on('click', function () {
@@ -203,29 +211,40 @@ $(document).ready(function() {
     });
 
     $('#add-server__btn').on('click', function () {
+        addNewJira();
+    });
+    
+    function addNewJira() {
         var serverUrl = $('#server-url').val();
-        var isServer = rememberJiraUrl(serverUrl);
         showLoader();
-        if (isServer != false) {
-            checkValidation(serverUrl).then(function(data) {
-                hideLoader();
-                hideAuthError('.not-link');
-                rememberJiraUrl(serverUrl);
-                window.localStorage.setItem('active-server-url', serverUrl);
-                setUserInfo(data);
-            }).catch(function(error) {
+        if (serverUrl != '') {
+            rememberJiraUrl(serverUrl).then(function(res) {
+                if (res != false && res != undefined) {
+                    hideLoader();
+                    hideAuthError('.not-link');
+                    hideAuthError('.not-auth');
+                    hideAuthError('.incorrect-link');
+                    window.localStorage.setItem('active-server-url', serverUrl);
+                    $('#add-server-wrap input').val('');
+                    setUserInfo(res);
+                } else {
+                    hideLoader();
+                    showAuthError('.url-exist');
+                }
+            }).catch(function (error) {
                 hideLoader();
                 if (error.status == 403 || error.status == 400) {
                     showAuthError('.not-auth');
                 } else {
-                    showAuthError('.not-link');
+                    hideAuthError('.not-link');
+                    showAuthError('.incorrect-link');
                 }
             });
         } else {
             hideLoader();
-            showAuthError('.url-exist');
+            showAuthError('.not-link');
         }
-    });
+    }
 
     // -------------- INIT ---------------- //
     (function init() {

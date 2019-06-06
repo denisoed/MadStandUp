@@ -77,14 +77,14 @@ function get_issues_with_worklogs() {
             var issuesWithLogs = JSON.parse(data.target.response);
             resolve(issuesWithLogs['issues']);
         }, function (e) {
-            alert(e);
+            console.log(e);
         });
     });
 };
 
 export function get_issues_with_today_worklogs() {
     return new Promise(resolve => {
-        var theUrl = serverUrl + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday(true) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+        var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday(true) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
         httpGet('GET', theUrl).then(function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
             var todayLogs = 0;
@@ -97,7 +97,7 @@ export function get_issues_with_today_worklogs() {
             });
             resolve(secondsToHms(todayLogs));
         }, function (e) {
-            alert(e);
+            console.log(e);
         });
     });
 };
