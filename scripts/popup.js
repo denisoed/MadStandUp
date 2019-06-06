@@ -130,27 +130,31 @@ $(document).ready(function() {
 
     function getSavedJiraUrl() {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
+        if (jiraServers == null) {
+            return [];
+        }
         return Object.values(jiraServers);
     }
 
     function showSavedJiraUrl() {
         var servers = getSavedJiraUrl();
         $('#saved-servers').empty();
-        for (let i = 0; i < servers.length; i++) {
-            $('#saved-servers').append(
-                '<p class="http-error please-auth block--hide">Please, login to the link!</p>' +
-                '<div class="servers-btn">' +
-                    '<button class="saved-servers__btn" value="' + servers[i] + '">'
-                        + servers[i] +
-                    '</button>' +
-                    '<button class="remove-servers-btn" value="'
-                        + servers[i] + '">' +
-                        '<img src="img/bucket.svg" alt="Remove">' +
-                    '</button>' +
-                '</div>'
-            );
-        }
-        if ($('#saved-servers').is(':empty')) {
+        if (servers.length > 0) {
+            for (let i = 0; i < servers.length; i++) {
+                $('#saved-servers').append(
+                    '<p class="http-error please-auth block--hide">Please, login to the link!</p>' +
+                    '<div class="servers-btn">' +
+                        '<button class="saved-servers__btn" value="' + servers[i] + '">'
+                            + servers[i] +
+                        '</button>' +
+                        '<button class="remove-servers-btn" value="'
+                            + servers[i] + '">' +
+                            '<img src="img/bucket.svg" alt="Remove">' +
+                        '</button>' +
+                    '</div>'
+                );
+            }
+        } else {
             $('#saved-servers').html(
                 '<h5 class="saved-servers--empty">Server list is empty</h5>'
             );
