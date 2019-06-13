@@ -84,30 +84,55 @@ function get_issues_with_worklogs() {
 
 export function get_issues_with_today_worklogs() {
     return new Promise(resolve => {
-        var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday(true) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
-        httpGet('GET', theUrl).then(function (data) {
+        var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday(true) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults=1000';
+        httpGet('GET', theUrl).then(async function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
-            var todayLogs = 0;
-            issuesWithLogs['issues'].forEach(issue => {
-                issue.fields.worklog.worklogs.forEach(log => {
-                    if (log.updated.slice(0, 10) == get_yesterday(true)) {
-                        todayLogs += Number(log.timeSpentSeconds);
-                    }
-                });
-            });
-            resolve(secondsToHms(todayLogs));
+            var keys = await get_issues_keys(issuesWithLogs['issues']);
+            var todayLogs = await get_worklogs_time_from_issues(keys);
+            // var start = async () => {
+            //     var a = 0; 
+            //     console.log(todayLogs);
+            //     await todayLogs.forEach(num => {
+            //         a += num;
+            //     });
+            //     console.log(a);
+            // }
+            // start();
+            console.log(todayLogs[0]);
+            resolve(todayLogs);
         }, function (e) {
             console.log(e);
         });
     });
 };
 
+function get_worklogs_time_from_issues(keys) {
+    return new Promise(resolve => {
+        var todayLogs = [];
+        keys.forEach(key => {
+            var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/issue/' + key + '/worklog?maxResults=1000';
+            httpGet('GET', theUrl).then(function (data) {
+                var issueWithLogs = JSON.parse(data.target.response);
+                var a = 0;
+                issueWithLogs.worklogs.forEach(worklog => {
+                    if (worklog.updated.slice(0, 10) == get_yesterday(true)) {
+                        todayLogs.push(Number(worklog.timeSpentSeconds));
+                    }
+                });
+            }, function (e) {
+                console.log(e);
+            });
+            resolve(todayLogs);
+        });
+    });
+}
+
 function get_issues_keys(issues) {
     return new Promise(resolve => {
-        var comments = [];
-        issues.forEach(function (issue) {
-            comments.push(issue['key']);
-            resolve(comments);
+        var keys = [];
+        issues.forEach(issue => {
+            keys.push(issue['key']);
+            resolve(keys);
         });
     });
 };
