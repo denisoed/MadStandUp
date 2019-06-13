@@ -111,7 +111,9 @@ $(document).ready(function() {
                 if (values.includes(url)) {
                     return false;
                 }
+                jiraServers[Number(keys[keys.length - 1]) + 1] = url;
                 window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
+                return true;
             }
         }).catch(function (error) {
             return error;
@@ -221,9 +223,7 @@ $(document).ready(function() {
             rememberJiraUrl(serverUrl).then(function(res) {
                 if (res != false && res != undefined) {
                     hideLoader();
-                    hideAuthError('.not-link');
-                    hideAuthError('.not-auth');
-                    hideAuthError('.incorrect-link');
+                    hideAuthError('.http-error');
                     window.localStorage.setItem('active-server-url', serverUrl);
                     $('#add-server-wrap input').val('');
                     setUserInfo(res);
