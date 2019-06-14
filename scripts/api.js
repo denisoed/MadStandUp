@@ -87,45 +87,27 @@ export function get_issues_with_today_worklogs() {
         var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday(true) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults=1000';
         httpGet('GET', theUrl).then(async function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
+            var todayLogs = 0;
             var keys = await get_issues_keys(issuesWithLogs['issues']);
-            var todayLogs = await get_worklogs_time_from_issues(keys);
-            // var start = async () => {
-            //     var a = 0; 
-            //     console.log(todayLogs);
-            //     await todayLogs.forEach(num => {
-            //         a += num;
-            //     });
-            //     console.log(a);
-            // }
-            // start();
-            console.log(todayLogs[0]);
-            resolve(todayLogs);
+            for (const key of keys) {
+                var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/issue/' + key + '/worklog?maxResults=1000';
+                await httpGet('GET', theUrl).then(function (data) {
+                    var issueWithLogs = JSON.parse(data.target.response);
+                    issueWithLogs.worklogs.forEach(worklog => {
+                        if (worklog.updated.slice(0, 10) == get_yesterday(true)) {
+                            todayLogs += Number(worklog.timeSpentSeconds);
+                        }
+                    });
+                }, function (e) {
+                    console.log(e);
+                });
+            }
+            resolve(secondsToHms(todayLogs));
         }, function (e) {
             console.log(e);
         });
     });
 };
-
-function get_worklogs_time_from_issues(keys) {
-    return new Promise(resolve => {
-        var todayLogs = [];
-        keys.forEach(key => {
-            var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/issue/' + key + '/worklog?maxResults=1000';
-            httpGet('GET', theUrl).then(function (data) {
-                var issueWithLogs = JSON.parse(data.target.response);
-                var a = 0;
-                issueWithLogs.worklogs.forEach(worklog => {
-                    if (worklog.updated.slice(0, 10) == get_yesterday(true)) {
-                        todayLogs.push(Number(worklog.timeSpentSeconds));
-                    }
-                });
-            }, function (e) {
-                console.log(e);
-            });
-            resolve(todayLogs);
-        });
-    });
-}
 
 function get_issues_keys(issues) {
     return new Promise(resolve => {
