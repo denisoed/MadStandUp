@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "StandUpMan",
     "description": "Write stand-ups quickly",
-    "version": "0.0.9",
+    "version": "0.1.0",
     "author": "Denisoed",
     "browser_action": {
         "default_icon": "img/s.png",
