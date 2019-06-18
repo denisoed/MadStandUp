@@ -68,8 +68,8 @@ $(document).ready(function() {
         }
         $('#standup-text').text(
             'Доброе утро! @comedian\n\n*Вчера*\n' + yesterday +
-            '\n*Сегодня*\n -' +
-            '\n\n*Проблемы*\n - Нет проблем!'
+            '\n*Сегодня*\n-' +
+            '\n\n*Проблемы*\n- Нет проблем!'
         );
     }
 

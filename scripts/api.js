@@ -61,13 +61,16 @@ export function checkUserAuth(url) {
 export async function generateStandUp() {
     await checkUserAuth(serverUrl);
     var issues = await get_issues_with_worklogs();
-    var keys = await get_issues_keys(issues);
-    var worklogs = [];
-    for (const key of keys) {
-        worklogs.push(await get_worklogs_comments_from_issues(key));
+    if (issues !== undefined) {
+        var keys = await get_issues_keys(issues);
+        var worklogs = [];
+        for (const key of keys) {
+            worklogs.push(await get_worklogs_comments_from_issues(key));
+        }
+        var comments = await get_currentUser_comments(worklogs);
+        return comments;
     }
-    var comments = await get_currentUser_comments(worklogs);
-    return comments;
+    return [];
 }
 
 function get_issues_with_worklogs() {
