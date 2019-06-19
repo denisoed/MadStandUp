@@ -557,3 +557,6 @@ textarea {
 .work-info h5 {
     font-size: 12px;
 }
+.work-info h5 img {
+    margin-bottom: 3px;
+}
