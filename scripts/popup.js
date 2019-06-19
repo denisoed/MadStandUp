@@ -23,6 +23,7 @@ $(document).ready(function() {
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
         $('#jira-key').text(data['issues'][0]['key'].replace(/[^a-zA-Z]+/g, ''));
+        $('#jira-key').attr('href', serverUrl);
         return userName;
     }
 
@@ -126,6 +127,7 @@ $(document).ready(function() {
         var urlID = Object.keys(jiraServers).find(key => jiraServers[key] === url);
         delete jiraServers[urlID];
         window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
+        window.localStorage.setItem('active-server-url', '');
         showSavedJiraUrl();
     }
 
@@ -217,16 +219,19 @@ $(document).ready(function() {
     });
     
     function addNewJira() {
-        var serverUrl = $('#server-url').val();
+        var inputUrl = $('#server-url').val();
+        var key = 'atlassian.net';
+        var positionKey = inputUrl.indexOf(key);
+        var url = inputUrl.substring(0, positionKey + key.length);
         showLoader();
-        if (serverUrl != '') {
-            rememberJiraUrl(serverUrl).then(function(res) {
+        if (url != '') {
+            rememberJiraUrl(url).then(function(res) {
                 if (res != false && res != undefined) {
                     hideLoader();
                     hideAuthError('.http-error');
-                    window.localStorage.setItem('active-server-url', serverUrl);
+                    window.localStorage.setItem('active-server-url', url);
                     $('#add-server-wrap input').val('');
-                    setUserInfo(res);
+                    showUserInfoSection(url);
                 } else {
                     hideLoader();
                     showAuthError('.url-exist');
@@ -246,10 +251,8 @@ $(document).ready(function() {
         }
     }
 
-    // -------------- INIT ---------------- //
-    (function init() {
-        showLoader();
-        checkValidation(serverUrl).then(function (data) {
+    function showUserInfoSection(url) {
+        checkValidation(url).then(function (data) {
             hideLoader();
             setUserInfo(data);
         }).catch(function (error) {
@@ -257,5 +260,11 @@ $(document).ready(function() {
             $('#first-step').removeClass('block--hide');
             showSavedJiraUrl();
         });
+    }
+
+    // -------------- INIT ---------------- //
+    (function init() {
+        showLoader();
+        showUserInfoSection(serverUrl);
     })();
 });
