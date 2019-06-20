@@ -61,7 +61,7 @@ export function checkUserAuth(url) {
 export async function generateStandUp() {
     await checkUserAuth(serverUrl);
     var issues = await get_issues_with_worklogs();
-    if (issues !== undefined) {
+    if (issues !== undefined && issues.length !== 0) {
         var keys = await get_issues_keys(issues);
         var worklogs = [];
         for (const key of keys) {
@@ -90,6 +90,9 @@ export function get_issues_with_today_worklogs() {
         var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday(true) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults=1000';
         httpGet('GET', theUrl).then(async function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
+            if (issuesWithLogs.total == 0) {
+                resolve(secondsToHms(0));
+            }
             var todayLogs = 0;
             var keys = await get_issues_keys(issuesWithLogs['issues']);
             for (const key of keys) {
