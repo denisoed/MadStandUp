@@ -67,7 +67,7 @@ $(document).ready(function() {
             }
             yesterday += '- ' + comment.trim() + ' ' + texts[i]['link'] + '\n';
         }
-        $('#standup-text').text(
+        $('#standup-text').val(
             'Доброе утро! @comedian\n\n*Вчера*\n' + yesterday +
             '\n*Сегодня*\n-' +
             '\n\n*Проблемы*\n- Нет проблем!'
