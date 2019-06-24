@@ -147,6 +147,7 @@ $(document).ready(function() {
                 $('#saved-servers').append(
                     '<p class="http-error please-auth block--hide">Please, login to the link!</p>' +
                     '<div class="servers-btn">' +
+                        '<img class="server-key" src="img/key-open.svg" alt="Remove">' +
                         '<button class="saved-servers__btn" value="' + servers[i] + '">'
                             + servers[i] +
                         '</button>' +
