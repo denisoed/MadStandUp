@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "MadStandUp",
     "description": "Write stand-ups quickly",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "Denisoed",
     "icon": "img/logo_128x128.png",
     "browser_action": {
