@@ -1,0 +1,17 @@
+.standup {
+    padding: 0 15px;
+}
+
+.standup_bar label span {
+    font-size: 14px;
+}
+
+.standup_bar input {
+    width: 200px;
+    height: 35px;
+}
+
+.standup_field {
+    width: 100%;
+    margin: 15px 0;
+}

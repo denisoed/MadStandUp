@@ -26,10 +26,10 @@ function secondsToHms(sec) {
     return hDisplay + mDisplay + sDisplay;
 }
 
-function get_yesterday(isToday = false) {
+export function get_date(date = '') {
     var today = new Date();
-    if (isToday) {
-        return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+    if (date != '') {
+        return date;
     } else {
         if (today.getDay() == 1) {
             return today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + (today.getDate() - 3)).slice(-2);
@@ -58,24 +58,24 @@ export function checkUserAuth(url) {
     });
 }
 
-export async function generateStandUp() {
+export async function generateStandUp(date) {
     await checkUserAuth(serverUrl);
-    var issues = await get_issues_with_worklogs();
+    var issues = await get_issues_with_worklogs(date);
     if (issues !== undefined && issues.length !== 0) {
         var keys = await get_issues_keys(issues);
         var worklogs = [];
         for (const key of keys) {
             worklogs.push(await get_worklogs_comments_from_issues(key));
         }
-        var comments = await get_currentUser_comments(worklogs);
+        var comments = await get_currentUser_comments(worklogs, date);
         return comments;
     }
     return [];
 }
 
-function get_issues_with_worklogs() {
+function get_issues_with_worklogs(date) {
     return new Promise(resolve => {
-        var theUrl = serverUrl + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday() + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+        var theUrl = serverUrl + '/rest/api/2/search?jql=worklogDate=' + '"' + get_date(date) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
         httpGet('GET', theUrl).then(function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
             resolve(issuesWithLogs['issues']);
@@ -86,8 +86,10 @@ function get_issues_with_worklogs() {
 };
 
 export function get_issues_with_today_worklogs() {
+    var today = new Date();
+    var date = today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
     return new Promise(resolve => {
-        var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/search?jql=worklogDate=' + '"' + get_yesterday(true) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults=1000';
+        var theUrl = window.localStorage.getItem('active-server-url') + '/rest/api/2/search?jql=worklogDate=' + '"' + get_date(date) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults=1000';
         httpGet('GET', theUrl).then(async function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
             if (issuesWithLogs.total == 0) {
@@ -100,7 +102,7 @@ export function get_issues_with_today_worklogs() {
                 await httpGet('GET', theUrl).then(function (data) {
                     var issueWithLogs = JSON.parse(data.target.response);
                     issueWithLogs.worklogs.forEach(worklog => {
-                        if (worklog.updated.slice(0, 10) == get_yesterday(true)) {
+                        if (worklog.updated.slice(0, 10) == get_date(date)) {
                             todayLogs += Number(worklog.timeSpentSeconds);
                         }
                     });
@@ -142,7 +144,7 @@ function get_worklogs_comments_from_issues(key) {
     });
 };
 
-function get_currentUser_comments(listLogs) {
+function get_currentUser_comments(listLogs, date) {
     return new Promise(resolve => {
         var array = [];
         listLogs.forEach(logs => {
@@ -151,7 +153,7 @@ function get_currentUser_comments(listLogs) {
                 link: logs.link
             }
             logs.comments.forEach(function (log) {
-                if (log['created'].slice(0, 10) == get_yesterday() &&
+                if (log['created'].slice(0, 10) == get_date(date) &&
                     userInfo['name'] == log['author']['name']) {
                     obj.comments.push(log['comment']);
                 }

@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Generate standUp</title>
+    <script src="scripts/jquery.js"></script>
+    <script type="module" src="scripts/datepicker.min.js"></script>
+    <script type="module" src="scripts/standup.js"></script>
+    <link rel="stylesheet" href="styles/datepicker.min.css">
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/standup.css">
+</head>
+
+<body>
+    <div class="standup">
+        <a href="https://github.com/denisoed/MadStandUp" target="_blank" id="logo">
+            <img id="loading" src="img/loading-white.svg" alt="Loading">
+            S
+        </a>
+        <div class="standup_bar">
+            <label>
+                <span>Select date:</span>
+                <input data-toggle="datepicker" placeholder="yyyy-mm-dd">
+            </label>
+        </div>
+        <div class="standup_field">
+            <textarea id="standup-text" rows="10"></textarea>
+            <!-- <button id="copyAll">Copy All</button> -->
+        </div>
+        <button class="btn" id="getStandup">Get standup!</button>
+    </div>
+</body>
+
+</html>
