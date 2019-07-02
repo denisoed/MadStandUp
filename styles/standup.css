@@ -15,3 +15,37 @@
     width: 100%;
     margin: 15px 0;
 }
+
+.datepicker-top-left,
+.datepicker-top-right {
+    border-top-color: #6F56F9;
+}
+
+.datepicker-top-left:before,
+.datepicker-top-right:before {
+    border-bottom-color: #6F56F9;
+}
+
+.datepicker-panel>ul>li:hover {
+    background-color: #eceaf9;
+    color: #6F56F9;
+}
+
+.datepicker-panel>ul>li.highlighted:hover {
+    background-color: #eceaf9;
+    color: #6F56F9;
+}
+
+.datepicker-panel>ul>li.picked:hover {
+    background-color: #eceaf9;
+    color: #6F56F9;
+}
+
+.datepicker-panel>ul>li.highlighted {
+    background-color: transparent;
+}
+
+.datepicker-panel>ul>li.picked {
+    background-color: #eceaf9;
+    color: #6F56F9;
+}
