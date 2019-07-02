@@ -9,6 +9,10 @@
 .standup_bar input {
     width: 200px;
     height: 35px;
+    background-image: url(../img/calendar.svg);
+    background-position: 94% 6px;
+    background-size: 20px;
+    background-repeat: no-repeat;
 }
 
 .standup_field {
