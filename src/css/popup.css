@@ -1,0 +1,447 @@
+
+.container {
+    width: auto;
+    height: auto;
+    min-height: 240px;
+    padding: 20px;
+    padding-top: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-image: url('../images/bg.jpg');
+    background-size: 100%;
+}
+
+#user_info {
+    display: flex;
+    align-items: center;
+    margin: 0 0 15px;
+}
+
+#user_info .wrap-userAvatar {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #6F56F9;
+    border-radius: 100%;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+#user_info .userAvatar {
+    width: 40px;
+    height: 40px;
+}
+
+#user_info .wrap-userInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#user_info .userName, .userMail {
+    font-size: 12px;
+}
+
+#user_info .userMail {
+    margin-top: 7px;
+}
+
+.block--hide {
+    display: none !important;
+}
+
+/* ----------------------- */
+.valid-user {
+    width: 100%;
+}
+
+.valid-user_btns {
+    width: auto;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.wrap-no-valid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.no-valid-server {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: row;
+    justify-content: space-between;
+    font-family: 'Ubuntu', sans-serif;
+    color: #1c1e24;
+}
+
+.no-valid-server .server-url-label {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.http-error {
+    width: 100%;
+    color: red;
+    font-size: 11px;
+    margin: 0;
+    margin-bottom: 4px;
+}
+
+.please-auth {
+    margin-top: -4px;
+    margin-left: 14px;
+}
+
+.no-valid-server .server-url-label input {
+    width: 100%;
+    font-size: 16px;
+    border: 1px solid rgba(28, 30, 36, .1);
+    box-shadow: 2px 2px 10px 0 rgba(28,30,36, .1);
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+.no-valid-server .server-url-label input::-webkit-input-placeholder {
+    font-size: 12px;
+    color: #4d638c;
+    opacity: .7;
+}
+
+.no-valid-server__btns {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 10px;
+}
+
+.check-connect-jira .check-connect-jira-icon {
+    width: 30px;
+    height: 30px;
+}
+
+#saved-servers {
+    width: 100%;
+}
+
+#rememberJiraUrl {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+/* -------------------------- */
+/* Section for add new server */
+/* -------------------------- */
+
+#first-step {
+    width: 100%;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.add-server-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: column;
+    margin-left: auto;
+    margin-top: 20px;
+}
+.add-server-wrap::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 0;
+    transition: all .3s ease;
+    opacity: 1;
+    background-image: url('../img/bg.jpg');
+    background-size: 100%;
+}
+.control_button {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    z-index: 2;
+    background-color: #fff;
+    border-radius: 100%;
+    box-shadow: 1px 1px 15px 0 rgba(28, 30, 36, .3);
+}
+.control_button img {
+    width: 10px;
+    height: 10px;
+    user-select: none;
+    pointer-events: none;
+}
+
+.add-server__close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.go-auth-step {
+    position: absolute;
+    left: 20px;
+    top: 17px;
+}
+
+.go-auth-step img {
+    width: 12px;
+    height: 12px;
+}
+
+.jira-key {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    margin: 0;
+    font-weight: bold;
+    color: #6F56F9;
+}
+
+.add-server-wrap h5 {
+    width: 250px;
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #7883dc;
+    font-size: 18px;
+    text-align: center;
+    opacity: 1;
+    transition: all .1s ease;
+    text-shadow: 2px 2px 5px rgba(28, 30, 36, .2);
+    background-color: #fff;
+}
+
+.add-server-wrap .http-error {
+    width: 100%;
+    position: absolute;
+    top: -15px;
+    left: 18px;
+    color: red;
+    background-color: #fff;
+    margin: 0;
+    font-size: 11px;
+    z-index: 1;
+}
+
+.add-server {
+    width: 310px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    margin-left: auto;
+    background-color: #6F56F9;
+    padding: 3px;
+    box-sizing: border-box;
+    border-radius: 50px;
+    z-index: 1;
+    box-shadow: 3px 3px 15px 0 rgba(28, 30, 36, .4);
+    transition: all .3s ease;
+}
+
+.add-server label {
+    width: 100%;
+}
+.add-server input {
+    width: 100%;
+    border: 0;
+    background-color: transparent;
+    color: #fff;
+    font-weight: 600;
+    margin-right: 8px;
+    margin-left: 15px;
+    z-index: 1;
+    transition: all .3s ease;
+    font-size: 14px;
+    box-shadow: none;
+}
+.add-server input::placeholder {
+    color: #fff;
+    font-weight: 500;
+    font-style: italic;
+    font-size: 12px;
+}
+.add-server button {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+    border: 0;
+    background-color: #6F56F9;
+    box-shadow: 0 0 5px 0 rgba(28,30,36, .7);
+    cursor: pointer;
+    z-index: 1;
+    user-select: all;
+    pointer-events: all;
+}
+.add-server button img {
+    width: 15px;
+    height: 15px;
+    display: block;
+}
+
+.add-server-wrap--disable {
+    width: auto;
+    cursor: pointer;
+    box-shadow: none;
+}
+.add-server-wrap--disable::before {
+    content: '';
+    opacity: 0;
+    z-index: -1;
+}
+.add-server-wrap--disable .add-server {
+    width: 41px;
+}
+.add-server-wrap--disable .add-server__close {
+    display: none;
+}
+.add-server-wrap--disable .add-server__desc {
+    opacity: 0;
+    z-index: -1;
+}
+.add-server-wrap--disable button {
+    user-select: none;
+    pointer-events: none;
+}
+.add-server-wrap--disable input {
+    width: 0;
+    margin: 0;
+}
+
+/* ---------------------------------- */
+/* Section with saved servers buttons */
+/* ---------------------------------- */
+#saved-servers {
+    z-index: 0;
+}
+.servers-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+    box-shadow: 0px 0px 10px 0 rgba(28, 30, 36, .2);
+    border-radius: 10px;
+}
+.saved-servers__btn {
+    width: 100%;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    font-size: 15px;
+    border-radius: 10px;
+    font-family: 'Ubuntu',
+    sans-serif;
+    color: #283654;
+    white-space: nowrap;
+    transition: all .3s ease;
+    user-select: none;
+    cursor: pointer;
+    background-color: #fff;
+    border: none;
+    z-index: 1;
+}
+
+.servers-btn:last-child {
+    margin-bottom: 0;
+}
+
+.remove-servers-btn {
+    width: 40px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #6F56F9;
+    border: none;
+    border-radius: 10px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    cursor: pointer;
+    z-index: 0;
+    margin-left: -38px;
+    transition: all .2s ease;
+}
+
+.remove-servers-btn img {
+    width: 15px;
+    height: 15px;
+    pointer-events: none;
+    user-select: none;
+}
+
+.servers-btn:hover {
+    box-shadow: 2px 2px 12px 0 rgba(28, 30, 36, .2);
+}
+.servers-btn:active {
+    box-shadow: 2px 2px 2px 0 rgba(28, 30, 36, .2);
+}
+.servers-btn:hover .saved-servers__btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.servers-btn:hover .remove-servers-btn {
+    margin-left: 0;
+    z-index: 2;
+}
+
+.saved-servers--empty {
+    width: 250px;
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #7883dc;
+    font-size: 18px;
+    text-align: center;
+    opacity: 1;
+    transition: all .3s ease;
+    text-shadow: 2px 2px 5px rgba(28, 30, 36, .2);
+    background-color: #fff;
+}
+
+.work-info {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.work-info p {
+    margin: 0;
+    margin-right: 6px;
+}
+
+.work-info h5 {
+    font-size: 12px;
+}
+.work-info h5 img {
+    margin-bottom: 2px;
+}

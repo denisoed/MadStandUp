@@ -1,0 +1,55 @@
+.standup {
+    padding: 0 15px;
+}
+
+.standup_bar label span {
+    font-size: 14px;
+}
+
+.standup_bar input {
+    width: 200px;
+    height: 35px;
+    background-image: url(../img/calendar.svg);
+    background-position: 94% 6px;
+    background-size: 20px;
+    background-repeat: no-repeat;
+}
+
+.standup_field {
+    width: 100%;
+    margin: 15px 0;
+}
+
+.datepicker-top-left,
+.datepicker-top-right {
+    border-top-color: #6F56F9;
+}
+
+.datepicker-top-left:before,
+.datepicker-top-right:before {
+    border-bottom-color: #6F56F9;
+}
+
+.datepicker-panel>ul>li:hover {
+    background-color: #eceaf9;
+    color: #6F56F9;
+}
+
+.datepicker-panel>ul>li.highlighted:hover {
+    background-color: #eceaf9;
+    color: #6F56F9;
+}
+
+.datepicker-panel>ul>li.picked:hover {
+    background-color: #eceaf9;
+    color: #6F56F9;
+}
+
+.datepicker-panel>ul>li.highlighted {
+    background-color: transparent;
+}
+
+.datepicker-panel>ul>li.picked {
+    background-color: #eceaf9;
+    color: #6F56F9;
+}

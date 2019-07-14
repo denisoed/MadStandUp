@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Popup Menu</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/popup.css">
+
+  </head>
+  <body>
+    <div class="container" id="popup-container">
+
+      <a href="https://github.com/denisoed/MadStandUp" target="_blank" id="logo">
+        <img id="loading" src="../images/loading-white.svg" alt="Loading">
+        S
+      </a>
+
+      <!-- ------- First step --------- -->
+
+      <div id="first-step" class="block--hide">
+        <!-- Saved servers-->
+        <div id="saved-servers"></div>
+      
+        <!-- Block for add jira server -->
+        <div id="add-server-wrap" class="add-server-wrap add-server-wrap--disable">
+          <button id="add-server__close" class="control_button add-server__close">
+            <img src="../images/close.svg" alt="New server">
+          </button>
+          <h5 class="add-server__desc">Please, add a link to the jira server to generate a stand-up</h5>
+          <div id="add-server" class="add-server">
+            <p class="http-error incorrect-link block--hide">incorrect jira link!</p>
+            <p class="http-error not-link block--hide">Please, add jira url!</p>
+            <p class="http-error not-auth block--hide">Please, login to the inserted link!</p>
+            <p class="http-error url-exist block--hide">URL already exists</p>
+            <input type="text" id="server-url" name="server" placeholder="Example: https://my-jira.atlassian.net">
+            <button id="add-server__btn">
+              <img src="../images/add.svg" alt="New server">
+            </button>
+          </div>
+        </div>
+        <!-- END block -->
+      </div>
+
+      <!-- -------- Second step -------- -->
+
+      <div id="valid-user" class="valid-user block--hide">
+
+        <button id="go-auth-step" class="control_button go-auth-step">
+          <img src="../images/prev.svg" alt="Go auth step">
+        </button>
+
+        <a id="jira-key" target="_blank" class="jira-key"></a>
+
+        <div id="user_info">
+          <div class="wrap-userAvatar">
+            <img id="userAvatar" class="userAvatar" src="" alt="Current user">
+          </div>
+          <div class="wrap-userInfo">
+            <h5 id="userName" class="userName"></h5>
+            <h5 id="userMail" class="userMail"></h5>
+          </div>
+        </div>
+        <div class="work-info">
+          <p>Today logged:</p>
+          <h5 id="work-logged"><img src="../images/ajax_loader.svg" alt="Loading"></h5>
+        </div>
+        <div class="valid-user_btns">
+          <a class="btn" id="getStandup" href="standup.html" target="_blank">Create StandUp</a>
+        </div>
+      </div>
+
+    </div>
+    <script src="../js/popup.js"></script>
+  </body>
+</html>
