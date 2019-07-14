@@ -51,7 +51,7 @@ $(document).ready(function() {
     }
     
     async function checkValidation(data) {
-        var theUrl = data.url + '/rest/api/2/search?jql=project=' + data.key + '&assignee=currentuser()';
+        var theUrl = data.url + '/rest/api/2/search?jql=project=' + data.key + ' AND assignee=currentuser()';
         return new Promise(function (resolve, reject) {
             $.ajax({
                 url: theUrl,
@@ -286,7 +286,13 @@ $(document).ready(function() {
     // -------------- INIT ---------------- //
     (function init() {
         showLoader();
-        showUserInfoSection(serverUrl);
+        if (serverUrl != '') {
+            showUserInfoSection(JSON.parse(serverUrl));
+        } else {
+            hideLoader();
+            $('#first-step').removeClass('block--hide');
+            showSavedJiraUrl();
+        }
     })();
 });
 
