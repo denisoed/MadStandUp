@@ -3,9 +3,10 @@ const path = require('path');
 module.exports = {
   entry: {
     background: './src/js/background',
-    popup: './src/js/content',
+    api: './src/js/api',
+    content: './src/js/content',
     popup: './src/js/popup',
-    content: './src/js/standup'
+    standup: './src/js/standup'
   },
   output: {
     filename: './js/[name].js'
