@@ -3,8 +3,8 @@
   "version": "0.1.3",
   "description": "Write stand-ups quickly",
   "engines": {
-    "node": "7.0.0",
-    "npm": "3.10.8"
+    "node": "7.10.1",
+    "npm": "4.2.0"
   },
   "scripts": {
     "build": "mkdir -p ./build/prod && webpack --config ./webpack/webpack.config.prod.js",

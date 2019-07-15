@@ -85,21 +85,32 @@ $(document).ready(function() {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
         var server = {};
         var isValid = checkValidation(data).then(function (response) {
-            if (jiraServers == null || Object.keys(jiraServers).length == 0) {
-                server = {
-                    0: data
-                };
-                window.localStorage.setItem('jira-servers', JSON.stringify(server));
-                return response;
-            } else {
-                var keys = Object.keys(jiraServers);
-                var values = Object.values(jiraServers);
-                if (values.includes(data.url)) {
-                    return false;
+            if (response.total != 0) {
+                if (jiraServers == null || Object.keys(jiraServers).length == 0) {
+                    server = {
+                        0: data
+                    };
+                    window.localStorage.setItem('jira-servers', JSON.stringify(server));
+                    return response;
+                } else {
+                    var keys = Object.keys(jiraServers);
+                    var values = Object.values(jiraServers);
+                    var duplicate = values.some(item => {
+                        return item.key == data.key;
+                    });
+                    if (duplicate) {
+                        hideLoader();
+                        showAuthError('project-exist');
+                        return false;
+                    } else {
+                        jiraServers[Number(keys[keys.length - 1]) + 1] = data;
+                        window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
+                        return true;
+                    }
                 }
-                jiraServers[Number(keys[keys.length - 1]) + 1] = data;
-                window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
-                return true;
+            } else {
+                hideLoader();
+                showAuthError('.not-data');
             }
         }).catch(function (error) {
             return error;
@@ -199,6 +210,9 @@ $(document).ready(function() {
 
     $('#add-server__close').on('click', function () {
         hideAuthError('.http-error');
+        $('#saved-servers').removeClass('block--hide');
+        $('#projects').addClass('block--hide');
+        $('.add-server__desc').removeClass('block--hide');
         $('#add-server-wrap').addClass('add-server-wrap--disable');
     });
 
@@ -214,32 +228,43 @@ $(document).ready(function() {
             saveNewJira(value);
         }
     });
+
+    function validateUrl(url) {
+        if (url.includes('https://pm.maddevs.co')) {
+            return 'https://pm.maddevs.co';
+        }
+        if (url.includes('atlassian.net')) {
+            var positionKey = url.indexOf('atlassian.net');
+            return url.substring(0, positionKey + 'atlassian.net'.length);
+        }
+        return false;
+    }
     
     function addNewJira() {
         var inputUrl = $('#server-url').val();
-        var key = 'atlassian.net';
-        var resultUrl = '';
-        if (inputUrl.includes('https://pm.maddevs.co')) {
-            resultUrl = 'https://pm.maddevs.co';
-        }
-        if (inputUrl.includes(key)) {
-            var positionKey = inputUrl.indexOf(key);
-            resultUrl = inputUrl.substring(0, positionKey + key.length);
-        }
-        showLoader();
-        if (resultUrl != '') {
+        var resultUrl = validateUrl(inputUrl);
+        showLoader(); 
+        if (resultUrl != false) {
             get_projects(resultUrl).then(res => {
-                hideLoader();
-                $('.add-server__desc').addClass('block--hide');
-                $('#projects').empty();
-                for (let i = 0; i < res.length; i++) {
-                    $('#projects').append(
-                        "<button class='projects_item' value='" + JSON.stringify({
-                            url: resultUrl,
-                            name: res[i].name,
-                            key: res[i].key
-                        }) + "'>" + res[i].key + '-' + res[i].name + "</button>"
-                    );
+                if (res.length != 0) {
+                    hideLoader();
+                    hideAuthError('.not-auth');
+                    $('#saved-servers').addClass('block--hide');
+                    $('.add-server__desc').addClass('block--hide');
+                    $('#projects').removeClass('block--hide');
+                    $('#projects').empty();
+                    for (let i = 0; i < res.length; i++) {
+                        $('#projects').append(
+                            "<button class='projects_item' value='" + JSON.stringify({
+                                url: resultUrl,
+                                name: res[i].name,
+                                key: res[i].key
+                            }) + "'>" + res[i].key + ' - ' + res[i].name + "</button>"
+                        );
+                    }
+                } else {
+                    hideLoader();
+                    showAuthError('.not-auth');
                 }
             });
         } else {
@@ -254,12 +279,14 @@ $(document).ready(function() {
             if (res != false && res != undefined) {
                 hideLoader();
                 hideAuthError('.http-error');
+                hideAuthError('.not-data');
+                $('#saved-servers').removeClass('block--hide');
                 window.localStorage.setItem('active-server-url', JSON.stringify(data));
                 $('#add-server-wrap input').val('');
                 showUserInfoSection(data);
             } else {
                 hideLoader();
-                showAuthError('.url-exist');
+                showAuthError('.project-exist');
             }
         }).catch(function (error) {
             hideLoader();
