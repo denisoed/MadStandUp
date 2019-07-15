@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Generate standUp</title>
-    <link rel="stylesheet" href="../css/datepicker.min.css">
+    <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/material_blue.css">
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/standup.css">
 </head>
@@ -18,7 +18,7 @@
         <div class="standup_bar">
             <label>
                 <span>Select date:</span>
-                <input data-toggle="datepicker" placeholder="yyyy-mm-dd">
+                <input id="datepicker" placeholder="yyyy-mm-dd">
             </label>
         </div>
         <div class="standup_field">
@@ -27,7 +27,7 @@
         </div>
         <button class="btn" id="getStandup">Get standup!</button>
     </div>
-    <script src="bundle.min.js"></script>
+    <script src="../js/standup.js"></script>
 </body>
 
 </html>

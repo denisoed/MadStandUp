@@ -74,6 +74,7 @@ export function checkUserAuth(url) {
 
 export async function generateStandUp(date) {
     await checkUserAuth(serverData.url);
+    console.log(serverData);
     var issues = await get_issues_with_worklogs(date);
     if (issues !== undefined && issues.length !== 0) {
         var keys = await get_issues_keys(issues);
@@ -88,8 +89,9 @@ export async function generateStandUp(date) {
 }
 
 function get_issues_with_worklogs(date) {
+    var theUrl = serverData.url + '/rest/api/2/search?jql=project' + serverData.key + ' AND worklogDate=' + '"' + get_date(date) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
     return new Promise(resolve => {
-        var theUrl = serverData.url + '/rest/api/2/search?jql=worklogDate=' + '"' + get_date(date) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+        console.log(theUrl);
         httpGet('GET', theUrl).then(function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
             resolve(issuesWithLogs['issues']);
