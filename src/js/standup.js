@@ -3,7 +3,7 @@ import msg from './modules/msg';
 import form from './modules/form';
 import runner from './modules/runner';
 import $ from 'jquery';
-import flatpickr from "flatpickr";
+import datepicker from "js-datepicker";
 import {
     generateStandUp,
     get_date
@@ -22,8 +22,18 @@ import {
 
 $(document).ready(function () {
 
-    flatpickr('#datepicker', {
-        defaultDate: get_date(),
+    datepicker('#datepicker', {
+        formatter: (input, date) => {
+            if (date != undefined) {
+                input.value = date.getUTCFullYear() + '-' + ('0' + (date.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2)
+            }
+        },
+        onSelect: (instance, date) => {
+            if (date == undefined) {
+                $('#datepicker').val(get_date());
+            }
+        },
+        dateSelected: new Date(get_date()),
         maxDate: new Date()
     });
 
