@@ -1,5 +1,6 @@
 import handlers from './modules/handlers';
 import msg from './modules/msg';
+import $ from 'jquery';
 
 // here we use SHARED message handlers, so all the contexts support the same
 // commands. but this is NOT typical messaging system usage, since you usually
@@ -60,7 +61,8 @@ export function get_date(date = '') {
 }
 
 export function checkUserAuth(url) {
-    var theUrl = url + '/rest/api/2/search?jql=assignee=currentuser()';
+    var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+    var theUrl = server.url + '/rest/api/2/search?jql=project=' + server.key + ' AND assignee=currentuser()';
     return new Promise(function (resolve, reject) {
         httpGet('GET', theUrl).then(function (data) {
             var response = JSON.parse(data.target.response);
@@ -74,7 +76,6 @@ export function checkUserAuth(url) {
 
 export async function generateStandUp(date) {
     await checkUserAuth(serverData.url);
-    console.log(serverData);
     var issues = await get_issues_with_worklogs(date);
     if (issues !== undefined && issues.length !== 0) {
         var keys = await get_issues_keys(issues);
@@ -89,9 +90,9 @@ export async function generateStandUp(date) {
 }
 
 function get_issues_with_worklogs(date) {
-    var theUrl = serverData.url + '/rest/api/2/search?jql=project' + serverData.key + ' AND worklogDate=' + '"' + get_date(date) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+    var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+    var theUrl = server.url + '/rest/api/2/search?jql=project=' + server.key + ' AND worklogDate=' + '"' + get_date(date) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
     return new Promise(resolve => {
-        console.log(theUrl);
         httpGet('GET', theUrl).then(function (data) {
             var issuesWithLogs = JSON.parse(data.target.response);
             resolve(issuesWithLogs['issues']);
@@ -146,8 +147,9 @@ function get_issues_keys(issues) {
 
 function get_worklogs_comments_from_issues(key) {
     return new Promise(resolve => {
-        var theUrl = serverData.url + '/rest/api/2/issue/' + key + '/worklog';
-        var issueLink = serverData.url + '/browse/' + key;
+        var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+        var theUrl = server.url + '/rest/api/2/issue/' + key + '/worklog';
+        var issueLink = server.url + '/browse/' + key;
         $.ajax({
             url: theUrl,
             success: function (data) {
