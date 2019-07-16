@@ -29,8 +29,11 @@ $(document).ready(function() {
 
     // ---------- Check Validation User ---------- //
     function setUserInfo(data) {
+        $('#work-logged').text('');
+        showLoaderDot();
         get_issues_with_today_worklogs().then(function (timeLogged) {
             $('#work-logged').text(timeLogged);
+            hideLoaderDot();
         });
         $('#valid-user').removeClass('block--hide');
         $('#first-step').addClass('block--hide');
@@ -75,6 +78,14 @@ $(document).ready(function() {
         $('#loading').hide();
     }
 
+    function showLoaderDot() {
+        $('#loaderDot').show();
+    }
+
+    function hideLoaderDot() {
+        $('#loaderDot').hide();
+    }
+
     function copyAll() {
         var copyText = document.getElementById('standup-text');
         copyText.select();
@@ -100,7 +111,8 @@ $(document).ready(function() {
                     });
                     if (duplicate) {
                         hideLoader();
-                        showAuthError('project-exist');
+                        hideAuthError('.http-error');
+                        showAuthError('.project-exist');                        
                         return false;
                     } else {
                         jiraServers[Number(keys[keys.length - 1]) + 1] = data;
@@ -110,6 +122,7 @@ $(document).ready(function() {
                 }
             } else {
                 hideLoader();
+                hideAuthError('.http-error');
                 showAuthError('.not-data');
             }
         }).catch(function (error) {
@@ -279,21 +292,17 @@ $(document).ready(function() {
             if (res != false && res != undefined) {
                 hideLoader();
                 hideAuthError('.http-error');
-                hideAuthError('.not-data');
-                $('#saved-servers').removeClass('block--hide');
                 window.localStorage.setItem('active-server-url', JSON.stringify(data));
                 $('#add-server-wrap input').val('');
                 showUserInfoSection(data);
-            } else {
-                hideLoader();
-                showAuthError('.project-exist');
             }
         }).catch(function (error) {
             hideLoader();
             if (error.status == 403 || error.status == 400) {
+                hideAuthError('.http-error');
                 showAuthError('.not-auth');
             } else {
-                hideAuthError('.not-link');
+                hideAuthError('.http-error');
                 showAuthError('.incorrect-link');
             }
         });
@@ -303,6 +312,7 @@ $(document).ready(function() {
         checkValidation(data).then(function (res) {
             hideLoader();
             setUserInfo(res);
+            $('#saved-servers').removeClass('block--hide');
         }).catch(function (error) {
             hideLoader();
             $('#first-step').removeClass('block--hide');
