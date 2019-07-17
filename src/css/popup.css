@@ -59,7 +59,6 @@
 .valid-user_btns {
     width: auto;
     margin-top: 30px;
-    margin-bottom: 20px;
 }
 
 .wrap-no-valid {
@@ -484,4 +483,129 @@
     cursor: pointer;
     font-weight: bold;
     box-shadow: 0px 0px 10px 0 rgba(28, 30, 36, .2);
+}
+
+/* ------------ Worklogs ------------- */
+.worklogs-open {
+    margin-left: 8px;
+}
+.worklogs_content-select,
+.worklogs_content-timespent {
+    display: flex;
+}
+
+.worklogs_content-select {
+    margin-bottom: 10px;
+}
+
+.worklogs_content-select p {
+    min-width: 75px;
+    font-family: 'Ubuntu',
+        sans-serif;
+}
+
+.worklogs_content-select select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: block;
+    padding: 8px 10px;
+    width: 170px;
+    outline: none;
+    font-family: 'Ubuntu',
+        sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    text-indent: 0.01px;
+    text-overflow: '';
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: calc(100% - 10px) 50%;
+    background-size: 10px;
+    box-shadow: 3px 3px 15px 0 rgba(28, 30, 36, .2);
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+DQo8cG9seWdvbiBvcGFjaXR5PSIwLjciIHBvaW50cz0iMCw0IDE2LDQgOCwxMiIvPg0KPC9zdmc+DQo=');
+}
+
+.issue-key_issue {
+    position: relative;
+}
+
+.issue-key_issue button {
+    width: 40px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #6F56F9;
+    color: #fff;
+    border: 0;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    cursor: pointer;
+}
+
+.worklogs-issuekey_label {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0 10px;
+    box-sizing: border-box;
+    font-family: 'Ubuntu',
+        sans-serif;
+    background-color: #fff;
+    font-size: 15px;
+    line-height: 1.3;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 3px 3px 15px 0 rgba(28, 30, 36, .2);
+}
+
+.worklogs_content-issue-key input {
+    text-transform: uppercase;
+    border: 0;
+    padding: 8px;
+    padding-left: 0;
+    margin-left: 0;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.issue-key_title {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+
+.worklogs_content-issue-key input::placeholder {
+    text-transform: none;
+}
+
+.worklogs_content-timespent p {
+    min-width: 75px;
+    font-family: 'Ubuntu',
+        sans-serif;
+}
+
+.worklogs_content-timespent input {
+    max-width: 170px;
+}
+
+.worklogs_content-comment {
+    margin-bottom: 6px;
+}
+
+.worklogs_content-comment textarea {
+    height: 200px;
+}
+
+.worklogs_content .http-error {
+    margin-top: 5px;
+}
+
+.worklogs-send {
+    margin-top: 6px;
 }
