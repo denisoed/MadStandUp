@@ -1,5 +1,12 @@
 ## Mad Stand Up
 [![Developed by Mad Devs](https://maddevs.io/badge-dark.svg)](https://maddevs.io/)
+&nbsp;
+![Developed by Mad Devs](https://img.shields.io/github/package-json/v/denisoed/MadStandUp.svg)
+&nbsp;
+![Developed by Mad Devs](https://img.shields.io/github/license/denisoed/MadStandUp.svg)
+&nbsp;
+![Developed by Mad Devs](https://img.shields.io/chrome-web-store/users/fghnfpdniphacgofkmokmbikefohfgof.svg)
+
 * Generate stand-ups
 * Easy time logging
 
