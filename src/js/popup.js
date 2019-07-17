@@ -131,10 +131,10 @@ $(document).ready(function() {
         return isValid;
     }
     
-    function removeSavedServer(url) {
+    function removeSavedServer(projectKey) {
         var jiraServers = JSON.parse(window.localStorage.getItem('jira-servers'));
-        var urlID = Object.keys(jiraServers).find(key => jiraServers[key].url === url);
-        delete jiraServers[urlID];
+        var project = Object.keys(jiraServers).find(key => jiraServers[key].key === projectKey);
+        delete jiraServers[project];
         window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
         window.localStorage.setItem('active-server-url', '');
         showSavedJiraUrl();
@@ -160,7 +160,7 @@ $(document).ready(function() {
                             + servers[i].name +
                         "</button>" +
                         "<button class='remove-servers-btn' value='"
-                            + servers[i].url + "'>" +
+                            + servers[i].key + "'>" +
                             "<img src='../images/bucket.svg' alt='Remove'>" +
                         "</button>" +
                     "</div>"
