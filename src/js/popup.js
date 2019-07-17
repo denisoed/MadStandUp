@@ -219,7 +219,7 @@ $(document).ready(function() {
         $('#add-server-wrap input').focus();
         $(document).on('keyup', function(e) {
             if (e.keyCode == 13 && $('#add-server-wrap input').val() != '') {
-                addNewJira();
+                addNewProject();
             }
         });
     });
@@ -233,7 +233,7 @@ $(document).ready(function() {
     });
 
     $('#add-server__btn').on('click', function () {
-        addNewJira();
+        addNewProject();
     });
     
     // ------------------ //
@@ -241,7 +241,7 @@ $(document).ready(function() {
     $(document).on('click', function (e) {
         if (e.target.className == 'projects_item') {
             var value = JSON.parse(e.target.value);
-            saveNewJira(value);
+            saveNewProject(value);
         }
     });
 
@@ -256,7 +256,7 @@ $(document).ready(function() {
         return false;
     }
     
-    function addNewJira() {
+    function addNewProject() {
         var inputUrl = $('#server-url').val();
         var resultUrl = validateUrl(inputUrl);
         showLoader(); 
@@ -289,14 +289,12 @@ $(document).ready(function() {
         }
     }
 
-    function saveNewJira(data) {
+    function saveNewProject(data) {
         showLoader();
         rememberJiraUrl(data).then(function (res) {
             if (res != false && res != undefined) {
-                hideLoader();
                 hideAuthError('.http-error');
                 window.localStorage.setItem('active-server-url', JSON.stringify(data));
-                $('#add-server-wrap input').val('');
                 showUserInfoSection(data);
             }
         }).catch(function (error) {
@@ -316,6 +314,7 @@ $(document).ready(function() {
             hideLoader();
             setUserInfo(res);
             jiraInfo = res;
+            $('#add-server-wrap input').val('');
             $('#saved-servers').removeClass('block--hide');
         }).catch(function (error) {
             hideLoader();
@@ -360,20 +359,20 @@ $(document).ready(function() {
             comment: $('#worklogs-comment').val()
         };
 
+        hideAuthError('.http-error');
+
         if (data.comment != '') {
             showLoader();
             add_worklog(data).then(function (res) {
                 if (res == true) {
                     hideLoader();
-                    $('#ajax-loader').removeClass('block--hide');
-                    $('#invalid-timespent').addClass('block--hide');
-                    $('#invalid-comment').addClass('block--hide');
+                    hideAuthError('.invalid-timespent');
+                    hideAuthError('.invalid-comment');
                     $('#work-logged').addClass('block--hide');
                     showLoaderDot();
                     get_issues_with_today_worklogs().then(function (timeLogged) {
                         hideLoaderDot();
                         $('#work-logged').text(timeLogged);
-                        $('#ajax-loader').addClass('block--hide');
                         $('#work-logged').removeClass('block--hide');
                     }).catch(function (e) {
                         console.log(e);
@@ -383,11 +382,11 @@ $(document).ready(function() {
                 }
             }).catch(function (e) {
                 hideLoader();
-                $('#invalid-timespent').removeClass('block--hide');
+                showAuthError('.incorrect-data');
             });
         } else {
             hideLoader();
-            $('#invalid-comment').removeClass('block--hide');
+            showAuthError('.invalid-comment');
         }
     });
 
