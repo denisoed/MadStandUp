@@ -5,7 +5,9 @@ import runner from './modules/runner';
 import $ from 'jquery';
 import {
     get_projects,
-    get_issues_with_today_worklogs
+    get_issues_with_today_worklogs,
+    get_issues_by_key,
+    add_worklog
 } from './api';
 
 // here we use SHARED message handlers, so all the contexts support the same
@@ -22,6 +24,7 @@ import {
 $(document).ready(function() {
 
     var serverUrl = window.localStorage.getItem('active-server-url');
+    var jiraInfo = {};
 
     window.onbeforeunload = function () {
         return false;
@@ -312,6 +315,7 @@ $(document).ready(function() {
         checkValidation(data).then(function (res) {
             hideLoader();
             setUserInfo(res);
+            jiraInfo = res;
             $('#saved-servers').removeClass('block--hide');
         }).catch(function (error) {
             hideLoader();
@@ -322,9 +326,20 @@ $(document).ready(function() {
 
     // -------------- Worklogs ------------------ //
     $('#worklogs-open').on('click', function () {
-        $('#worklogs').removeClass('block--hide');
-        $('#valid-user').addClass('block--hide');
-        $('#worklogs-issuekey_label').text(jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-');
+        showLoader();
+        $('#issue-key_title').text('');
+        $('#worklogs-issuekey').val('')
+        var data = JSON.parse(window.localStorage.getItem('active-server-url'));
+        checkValidation(data).then(function (res) {
+            hideLoader();
+            jiraInfo = res;
+            $('#worklogs').removeClass('block--hide');
+            $('#valid-user').addClass('block--hide');
+            $('#worklogs-issuekey_label').text(jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-');
+        }).catch(function (error) {
+            hideLoader();
+            console.log(error);
+        });
     });
 
     $('#findIssue').on('click', function () {
@@ -333,13 +348,14 @@ $(document).ready(function() {
             $('#issue-key_title--error').addClass('block--hide');
             $('#issue-key_title').text(issue.fields.summary);
         }).catch(e => {
+            $('#issue-key_title').text('');
             $('#issue-key_title--error').removeClass('block--hide');
         });
     });
 
     $('#worklogs-send').on('click', function () {
         var data = {
-            issue: $('#worklogs-issuekey').val(),
+            issue: $('#worklogs-issuekey_label').text() + $('#worklogs-issuekey').val(),
             time: $('#worklogs-time').val() == '' ? '1m' : $('#worklogs-time').val(),
             comment: $('#worklogs-comment').val()
         };
@@ -353,7 +369,9 @@ $(document).ready(function() {
                     $('#invalid-timespent').addClass('block--hide');
                     $('#invalid-comment').addClass('block--hide');
                     $('#work-logged').addClass('block--hide');
+                    showLoaderDot();
                     get_issues_with_today_worklogs().then(function (timeLogged) {
+                        hideLoaderDot();
                         $('#work-logged').text(timeLogged);
                         $('#ajax-loader').addClass('block--hide');
                         $('#work-logged').removeClass('block--hide');
