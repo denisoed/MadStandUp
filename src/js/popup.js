@@ -25,6 +25,9 @@ $(document).ready(function() {
 
     var serverUrl = window.localStorage.getItem('active-server-url');
     var jiraInfo = {};
+    var selectProject = true;
+    var openProject = true;
+    var openWorklogs = true;
 
     window.onbeforeunload = function () {
         return false;
@@ -44,7 +47,7 @@ $(document).ready(function() {
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
         $('#jira-key').text(data['issues'][0]['key'].replace(/[^a-zA-Z]+/g, ''));
-        $('#jira-key').attr('href', serverUrl);
+        $('#jira-key').attr('href', JSON.parse(serverUrl).url);
         return userName;
     }
 
@@ -180,16 +183,21 @@ $(document).ready(function() {
 
     $('#saved-servers').on('click', function (e) {
         if (e.target.className == 'saved-servers__btn') {
-            var value = JSON.parse(e.target.value);
-            showLoader();
-            checkValidation(value).then(function (data) {
-                hideLoader();
-                window.localStorage.setItem('active-server-url', JSON.stringify(value));
-                setUserInfo(data);
-            }).catch(function (error) {
-                hideLoader();
-                $(e.target).parent().prev().removeClass('block--hide');
-            });
+            if (openProject) {
+                openProject = false;
+                var value = JSON.parse(e.target.value);
+                showLoader();
+                checkValidation(value).then(function (data) {
+                    openProject = true;
+                    hideLoader();
+                    window.localStorage.setItem('active-server-url', JSON.stringify(value));
+                    setUserInfo(data);
+                }).catch(function (error) {
+                    openProject = true;
+                    hideLoader();
+                    $(e.target).parent().prev().removeClass('block--hide');
+                });
+            }
         } else if (e.target.className == 'remove-servers-btn') {
             removeSavedServer(e.target.value);
         }
@@ -290,23 +298,28 @@ $(document).ready(function() {
     }
 
     function saveNewProject(data) {
-        showLoader();
-        rememberJiraUrl(data).then(function (res) {
-            if (res != false && res != undefined) {
-                hideAuthError('.http-error');
-                window.localStorage.setItem('active-server-url', JSON.stringify(data));
-                showUserInfoSection(data);
-            }
-        }).catch(function (error) {
-            hideLoader();
-            if (error.status == 403 || error.status == 400) {
-                hideAuthError('.http-error');
-                showAuthError('.not-auth');
-            } else {
-                hideAuthError('.http-error');
-                showAuthError('.incorrect-link');
-            }
-        });
+        if (selectProject) {
+            selectProject = false;
+            showLoader();
+            rememberJiraUrl(data).then(function (res) {
+                selectProject = true;
+                if (res != false && res != undefined) {
+                    hideAuthError('.http-error');
+                    window.localStorage.setItem('active-server-url', JSON.stringify(data));
+                    showUserInfoSection(data);
+                }
+            }).catch(function (error) {
+                selectProject = true;
+                hideLoader();
+                if (error.status == 403 || error.status == 400) {
+                    hideAuthError('.http-error');
+                    showAuthError('.not-auth');
+                } else {
+                    hideAuthError('.http-error');
+                    showAuthError('.incorrect-link');
+                }
+            });
+        }
     }
 
     function showUserInfoSection(data) {
@@ -325,20 +338,25 @@ $(document).ready(function() {
 
     // -------------- Worklogs ------------------ //
     $('#worklogs-open').on('click', function () {
-        showLoader();
-        $('#issue-key_title').text('');
-        $('#worklogs-issuekey').val('')
-        var data = JSON.parse(window.localStorage.getItem('active-server-url'));
-        checkValidation(data).then(function (res) {
-            hideLoader();
-            jiraInfo = res;
-            $('#worklogs').removeClass('block--hide');
-            $('#valid-user').addClass('block--hide');
-            $('#worklogs-issuekey_label').text(jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-');
-        }).catch(function (error) {
-            hideLoader();
-            console.log(error);
-        });
+        if (openWorklogs) {
+            openWorklogs = false;
+            showLoader();
+            $('#issue-key_title').text('');
+            $('#worklogs-issuekey').val('')
+            var data = JSON.parse(window.localStorage.getItem('active-server-url'));
+            checkValidation(data).then(function (res) {
+                openWorklogs = true;
+                hideLoader();
+                jiraInfo = res;
+                $('#worklogs').removeClass('block--hide');
+                $('#valid-user').addClass('block--hide');
+                $('#worklogs-issuekey_label').text(jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-');
+            }).catch(function (error) {
+                openWorklogs = true;
+                hideLoader();
+                console.log(error);
+            });
+        }
     });
 
     $('#findIssue').on('click', function () {
