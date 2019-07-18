@@ -182,9 +182,9 @@ $(document).ready(function() {
     }
 
     $('#saved-servers').on('click', function (e) {
-        if (e.target.className == 'saved-servers__btn') {
-            if (openProject) {
-                openProject = false;
+        if (openProject) {
+            openProject = false;
+            if (e.target.className == 'saved-servers__btn') {
                 var value = JSON.parse(e.target.value);
                 showLoader();
                 checkValidation(value).then(function (data) {
@@ -197,9 +197,10 @@ $(document).ready(function() {
                     hideLoader();
                     $(e.target).parent().prev().removeClass('block--hide');
                 });
+            } else if (e.target.className == 'remove-servers-btn') {
+                openProject = true;
+                removeSavedServer(e.target.value);
             }
-        } else if (e.target.className == 'remove-servers-btn') {
-            removeSavedServer(e.target.value);
         }
     });
 
