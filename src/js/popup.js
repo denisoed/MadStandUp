@@ -28,6 +28,7 @@ $(document).ready(function() {
     var selectProject = true;
     var openProject = true;
     var openWorklogs = true;
+    var addWorklog = true;
 
     window.onbeforeunload = function () {
         return false;
@@ -361,51 +362,60 @@ $(document).ready(function() {
     });
 
     $('#findIssue').on('click', function () {
+        showLoader();
         var issueKey = jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-' + $('#worklogs-issuekey').val();
         get_issues_by_key(issueKey).then(issue => {
+            hideLoader();
             $('#issue-key_title--error').addClass('block--hide');
             $('#issue-key_title').text(issue.fields.summary);
         }).catch(e => {
+            hideLoader();
             $('#issue-key_title').text('');
             $('#issue-key_title--error').removeClass('block--hide');
         });
     });
 
     $('#worklogs-send').on('click', function () {
-        var data = {
-            issue: $('#worklogs-issuekey_label').text() + $('#worklogs-issuekey').val(),
-            time: $('#worklogs-time').val() == '' ? '1m' : $('#worklogs-time').val(),
-            comment: $('#worklogs-comment').val()
-        };
-
-        hideAuthError('.http-error');
-
-        if (data.comment != '') {
-            showLoader();
-            add_worklog(data).then(function (res) {
-                if (res == true) {
+        if (addWorklog) {
+            addWorklog = false;
+            var data = {
+                issue: $('#worklogs-issuekey_label').text() + $('#worklogs-issuekey').val(),
+                time: $('#worklogs-time').val() == '' ? '1m' : $('#worklogs-time').val(),
+                comment: $('#worklogs-comment').val()
+            };
+    
+            hideAuthError('.http-error');
+    
+            if (data.comment != '') {
+                showLoader();
+                add_worklog(data).then(function (res) {
+                    if (res == true) {
+                        addWorklog = true;
+                        hideLoader();
+                        hideAuthError('.invalid-timespent');
+                        hideAuthError('.invalid-comment');
+                        $('#work-logged').addClass('block--hide');
+                        showLoaderDot();
+                        get_issues_with_today_worklogs().then(function (timeLogged) {
+                            hideLoaderDot();
+                            $('#work-logged').text(timeLogged);
+                            $('#work-logged').removeClass('block--hide');
+                        }).catch(function (e) {
+                            console.log(e);
+                        });
+                        $('#worklogs').addClass('block--hide');
+                        $('#valid-user').removeClass('block--hide');
+                    }
+                }).catch(function (e) {
+                    addWorklog = true;
                     hideLoader();
-                    hideAuthError('.invalid-timespent');
-                    hideAuthError('.invalid-comment');
-                    $('#work-logged').addClass('block--hide');
-                    showLoaderDot();
-                    get_issues_with_today_worklogs().then(function (timeLogged) {
-                        hideLoaderDot();
-                        $('#work-logged').text(timeLogged);
-                        $('#work-logged').removeClass('block--hide');
-                    }).catch(function (e) {
-                        console.log(e);
-                    });
-                    $('#worklogs').addClass('block--hide');
-                    $('#valid-user').removeClass('block--hide');
-                }
-            }).catch(function (e) {
+                    showAuthError('.incorrect-data');
+                });
+            } else {
+                addWorklog = true;
                 hideLoader();
-                showAuthError('.incorrect-data');
-            });
-        } else {
-            hideLoader();
-            showAuthError('.invalid-comment');
+                showAuthError('.invalid-comment');
+            }
         }
     });
 
