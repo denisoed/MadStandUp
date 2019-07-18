@@ -1,12 +1,14 @@
 ## Mad Stand Up
 [![Developed by Mad Devs](https://maddevs.io/badge-dark.svg)](https://maddevs.io/)
-* includes awesome messaging module
-* webpack-based build system
-* full ES6 support with Babel 6
-* linting using eslint with airbnb configuration
-* use node.js libraries
-* unit-tests in mocha
-* CircleCI friendly
+&nbsp;
+![Developed by Mad Devs](https://img.shields.io/github/package-json/v/denisoed/MadStandUp.svg)
+&nbsp;
+![Developed by Mad Devs](https://img.shields.io/github/license/denisoed/MadStandUp.svg)
+&nbsp;
+![Developed by Mad Devs](https://img.shields.io/chrome-web-store/users/fghnfpdniphacgofkmokmbikefohfgof.svg)
+
+* Generate stand-ups
+* Easy time logging
 
 ### Installation:
 
@@ -107,6 +109,14 @@ resulting JS scripts to (for content scripts).
 For more information, please check also README.md files in subdirectories.
 
 ### Under the hood:
+
+* includes awesome messaging module
+* webpack-based build system
+* full ES6 support with Babel 6
+* linting using eslint with airbnb configuration
+* use node.js libraries
+* unit-tests in mocha
+* CircleCI friendly
 
 If you want to understand better the structure of the code and how it really
 works, please check the following sources (note: these resources are out of date, with respect to the build system and ES6):

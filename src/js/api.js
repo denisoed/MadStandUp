@@ -145,6 +145,22 @@ function get_issues_keys(issues) {
     });
 };
 
+export function get_issues_by_key(key) {
+    return new Promise((resolve, reject) => {
+        var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+        var theUrl = server.url + '/rest/api/2/issue/' + key;
+        $.ajax({
+            url: theUrl,
+            success: function (data) {
+                resolve(data);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+};
+
 function get_worklogs_comments_from_issues(key) {
     return new Promise(resolve => {
         var server = JSON.parse(window.localStorage.getItem('active-server-url'));
@@ -193,5 +209,32 @@ export function get_projects(url) {
         });
     });
 }
+
+export function add_worklog(response) {
+    var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+    var theUrl = server.url + '/rest/api/2/issue/' + response.issue + '/worklog';
+    var data = {
+        "timeSpent": response.time,
+        "comment": response.comment
+    };
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            type: 'POST',
+            url: theUrl,
+            type: 'POST',
+            data: JSON.stringify(data),
+            headers: {
+                'Access-Control-Allow-Origin': '*'
+            },
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                resolve(true);
+            },
+            error: function (e) {
+                reject(e);
+            }
+        });
+    });
+};
 
 msg.init('api', handlers.create('api'));

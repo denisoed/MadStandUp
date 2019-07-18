@@ -5,7 +5,9 @@ import runner from './modules/runner';
 import $ from 'jquery';
 import {
     get_projects,
-    get_issues_with_today_worklogs
+    get_issues_with_today_worklogs,
+    get_issues_by_key,
+    add_worklog
 } from './api';
 
 // here we use SHARED message handlers, so all the contexts support the same
@@ -22,6 +24,7 @@ import {
 $(document).ready(function() {
 
     var serverUrl = window.localStorage.getItem('active-server-url');
+    var jiraInfo = {};
 
     window.onbeforeunload = function () {
         return false;
@@ -216,7 +219,7 @@ $(document).ready(function() {
         $('#add-server-wrap input').focus();
         $(document).on('keyup', function(e) {
             if (e.keyCode == 13 && $('#add-server-wrap input').val() != '') {
-                addNewJira();
+                addNewProject();
             }
         });
     });
@@ -230,7 +233,7 @@ $(document).ready(function() {
     });
 
     $('#add-server__btn').on('click', function () {
-        addNewJira();
+        addNewProject();
     });
     
     // ------------------ //
@@ -238,7 +241,7 @@ $(document).ready(function() {
     $(document).on('click', function (e) {
         if (e.target.className == 'projects_item') {
             var value = JSON.parse(e.target.value);
-            saveNewJira(value);
+            saveNewProject(value);
         }
     });
 
@@ -253,7 +256,7 @@ $(document).ready(function() {
         return false;
     }
     
-    function addNewJira() {
+    function addNewProject() {
         var inputUrl = $('#server-url').val();
         var resultUrl = validateUrl(inputUrl);
         showLoader(); 
@@ -286,14 +289,12 @@ $(document).ready(function() {
         }
     }
 
-    function saveNewJira(data) {
+    function saveNewProject(data) {
         showLoader();
         rememberJiraUrl(data).then(function (res) {
             if (res != false && res != undefined) {
-                hideLoader();
                 hideAuthError('.http-error');
                 window.localStorage.setItem('active-server-url', JSON.stringify(data));
-                $('#add-server-wrap input').val('');
                 showUserInfoSection(data);
             }
         }).catch(function (error) {
@@ -312,6 +313,8 @@ $(document).ready(function() {
         checkValidation(data).then(function (res) {
             hideLoader();
             setUserInfo(res);
+            jiraInfo = res;
+            $('#add-server-wrap input').val('');
             $('#saved-servers').removeClass('block--hide');
         }).catch(function (error) {
             hideLoader();
@@ -319,6 +322,78 @@ $(document).ready(function() {
             showSavedJiraUrl();
         });
     }
+
+    // -------------- Worklogs ------------------ //
+    $('#worklogs-open').on('click', function () {
+        showLoader();
+        $('#issue-key_title').text('');
+        $('#worklogs-issuekey').val('')
+        var data = JSON.parse(window.localStorage.getItem('active-server-url'));
+        checkValidation(data).then(function (res) {
+            hideLoader();
+            jiraInfo = res;
+            $('#worklogs').removeClass('block--hide');
+            $('#valid-user').addClass('block--hide');
+            $('#worklogs-issuekey_label').text(jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-');
+        }).catch(function (error) {
+            hideLoader();
+            console.log(error);
+        });
+    });
+
+    $('#findIssue').on('click', function () {
+        var issueKey = jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-' + $('#worklogs-issuekey').val();
+        get_issues_by_key(issueKey).then(issue => {
+            $('#issue-key_title--error').addClass('block--hide');
+            $('#issue-key_title').text(issue.fields.summary);
+        }).catch(e => {
+            $('#issue-key_title').text('');
+            $('#issue-key_title--error').removeClass('block--hide');
+        });
+    });
+
+    $('#worklogs-send').on('click', function () {
+        var data = {
+            issue: $('#worklogs-issuekey_label').text() + $('#worklogs-issuekey').val(),
+            time: $('#worklogs-time').val() == '' ? '1m' : $('#worklogs-time').val(),
+            comment: $('#worklogs-comment').val()
+        };
+
+        hideAuthError('.http-error');
+
+        if (data.comment != '') {
+            showLoader();
+            add_worklog(data).then(function (res) {
+                if (res == true) {
+                    hideLoader();
+                    hideAuthError('.invalid-timespent');
+                    hideAuthError('.invalid-comment');
+                    $('#work-logged').addClass('block--hide');
+                    showLoaderDot();
+                    get_issues_with_today_worklogs().then(function (timeLogged) {
+                        hideLoaderDot();
+                        $('#work-logged').text(timeLogged);
+                        $('#work-logged').removeClass('block--hide');
+                    }).catch(function (e) {
+                        console.log(e);
+                    });
+                    $('#worklogs').addClass('block--hide');
+                    $('#valid-user').removeClass('block--hide');
+                }
+            }).catch(function (e) {
+                hideLoader();
+                showAuthError('.incorrect-data');
+            });
+        } else {
+            hideLoader();
+            showAuthError('.invalid-comment');
+        }
+    });
+
+    $('#go-info-step').on('click', function () {
+        $('#valid-user').removeClass('block--hide');
+        $('#worklogs').addClass('block--hide');
+    });
 
     // -------------- INIT ---------------- //
     (function init() {
