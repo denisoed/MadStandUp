@@ -25,6 +25,10 @@ $(document).ready(function() {
 
     var serverUrl = window.localStorage.getItem('active-server-url');
     var jiraInfo = {};
+    var selectProject = true;
+    var openProject = true;
+    var openWorklogs = true;
+    var addWorklog = true;
 
     window.onbeforeunload = function () {
         return false;
@@ -44,7 +48,7 @@ $(document).ready(function() {
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
         $('#jira-key').text(data['issues'][0]['key'].replace(/[^a-zA-Z]+/g, ''));
-        $('#jira-key').attr('href', serverUrl);
+        $('#jira-key').attr('href', JSON.parse(serverUrl).url);
         return userName;
     }
 
@@ -179,19 +183,25 @@ $(document).ready(function() {
     }
 
     $('#saved-servers').on('click', function (e) {
-        if (e.target.className == 'saved-servers__btn') {
-            var value = JSON.parse(e.target.value);
-            showLoader();
-            checkValidation(value).then(function (data) {
-                hideLoader();
-                window.localStorage.setItem('active-server-url', JSON.stringify(value));
-                setUserInfo(data);
-            }).catch(function (error) {
-                hideLoader();
-                $(e.target).parent().prev().removeClass('block--hide');
-            });
-        } else if (e.target.className == 'remove-servers-btn') {
-            removeSavedServer(e.target.value);
+        if (openProject) {
+            openProject = false;
+            if (e.target.className == 'saved-servers__btn') {
+                var value = JSON.parse(e.target.value);
+                showLoader();
+                checkValidation(value).then(function (data) {
+                    openProject = true;
+                    hideLoader();
+                    window.localStorage.setItem('active-server-url', JSON.stringify(value));
+                    setUserInfo(data);
+                }).catch(function (error) {
+                    openProject = true;
+                    hideLoader();
+                    $(e.target).parent().prev().removeClass('block--hide');
+                });
+            } else if (e.target.className == 'remove-servers-btn') {
+                openProject = true;
+                removeSavedServer(e.target.value);
+            }
         }
     });
 
@@ -290,23 +300,28 @@ $(document).ready(function() {
     }
 
     function saveNewProject(data) {
-        showLoader();
-        rememberJiraUrl(data).then(function (res) {
-            if (res != false && res != undefined) {
-                hideAuthError('.http-error');
-                window.localStorage.setItem('active-server-url', JSON.stringify(data));
-                showUserInfoSection(data);
-            }
-        }).catch(function (error) {
-            hideLoader();
-            if (error.status == 403 || error.status == 400) {
-                hideAuthError('.http-error');
-                showAuthError('.not-auth');
-            } else {
-                hideAuthError('.http-error');
-                showAuthError('.incorrect-link');
-            }
-        });
+        if (selectProject) {
+            selectProject = false;
+            showLoader();
+            rememberJiraUrl(data).then(function (res) {
+                selectProject = true;
+                if (res != false && res != undefined) {
+                    hideAuthError('.http-error');
+                    window.localStorage.setItem('active-server-url', JSON.stringify(data));
+                    showUserInfoSection(data);
+                }
+            }).catch(function (error) {
+                selectProject = true;
+                hideLoader();
+                if (error.status == 403 || error.status == 400) {
+                    hideAuthError('.http-error');
+                    showAuthError('.not-auth');
+                } else {
+                    hideAuthError('.http-error');
+                    showAuthError('.incorrect-link');
+                }
+            });
+        }
     }
 
     function showUserInfoSection(data) {
@@ -325,68 +340,82 @@ $(document).ready(function() {
 
     // -------------- Worklogs ------------------ //
     $('#worklogs-open').on('click', function () {
-        showLoader();
-        $('#issue-key_title').text('');
-        $('#worklogs-issuekey').val('')
-        var data = JSON.parse(window.localStorage.getItem('active-server-url'));
-        checkValidation(data).then(function (res) {
-            hideLoader();
-            jiraInfo = res;
-            $('#worklogs').removeClass('block--hide');
-            $('#valid-user').addClass('block--hide');
-            $('#worklogs-issuekey_label').text(jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-');
-        }).catch(function (error) {
-            hideLoader();
-            console.log(error);
-        });
+        if (openWorklogs) {
+            openWorklogs = false;
+            showLoader();
+            $('#issue-key_title').text('');
+            $('#worklogs-issuekey').val('')
+            var data = JSON.parse(window.localStorage.getItem('active-server-url'));
+            checkValidation(data).then(function (res) {
+                openWorklogs = true;
+                hideLoader();
+                jiraInfo = res;
+                $('#worklogs').removeClass('block--hide');
+                $('#valid-user').addClass('block--hide');
+                $('#worklogs-issuekey_label').text(jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-');
+            }).catch(function (error) {
+                openWorklogs = true;
+                hideLoader();
+                console.log(error);
+            });
+        }
     });
 
     $('#findIssue').on('click', function () {
+        showLoader();
         var issueKey = jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-' + $('#worklogs-issuekey').val();
         get_issues_by_key(issueKey).then(issue => {
+            hideLoader();
             $('#issue-key_title--error').addClass('block--hide');
             $('#issue-key_title').text(issue.fields.summary);
         }).catch(e => {
+            hideLoader();
             $('#issue-key_title').text('');
             $('#issue-key_title--error').removeClass('block--hide');
         });
     });
 
     $('#worklogs-send').on('click', function () {
-        var data = {
-            issue: $('#worklogs-issuekey_label').text() + $('#worklogs-issuekey').val(),
-            time: $('#worklogs-time').val() == '' ? '1m' : $('#worklogs-time').val(),
-            comment: $('#worklogs-comment').val()
-        };
-
-        hideAuthError('.http-error');
-
-        if (data.comment != '') {
-            showLoader();
-            add_worklog(data).then(function (res) {
-                if (res == true) {
+        if (addWorklog) {
+            addWorklog = false;
+            var data = {
+                issue: $('#worklogs-issuekey_label').text() + $('#worklogs-issuekey').val(),
+                time: $('#worklogs-time').val() == '' ? '1m' : $('#worklogs-time').val(),
+                comment: $('#worklogs-comment').val()
+            };
+    
+            hideAuthError('.http-error');
+    
+            if (data.comment != '') {
+                showLoader();
+                add_worklog(data).then(function (res) {
+                    if (res == true) {
+                        addWorklog = true;
+                        hideLoader();
+                        hideAuthError('.invalid-timespent');
+                        hideAuthError('.invalid-comment');
+                        $('#work-logged').addClass('block--hide');
+                        showLoaderDot();
+                        get_issues_with_today_worklogs().then(function (timeLogged) {
+                            hideLoaderDot();
+                            $('#work-logged').text(timeLogged);
+                            $('#work-logged').removeClass('block--hide');
+                        }).catch(function (e) {
+                            console.log(e);
+                        });
+                        $('#worklogs').addClass('block--hide');
+                        $('#valid-user').removeClass('block--hide');
+                    }
+                }).catch(function (e) {
+                    addWorklog = true;
                     hideLoader();
-                    hideAuthError('.invalid-timespent');
-                    hideAuthError('.invalid-comment');
-                    $('#work-logged').addClass('block--hide');
-                    showLoaderDot();
-                    get_issues_with_today_worklogs().then(function (timeLogged) {
-                        hideLoaderDot();
-                        $('#work-logged').text(timeLogged);
-                        $('#work-logged').removeClass('block--hide');
-                    }).catch(function (e) {
-                        console.log(e);
-                    });
-                    $('#worklogs').addClass('block--hide');
-                    $('#valid-user').removeClass('block--hide');
-                }
-            }).catch(function (e) {
+                    showAuthError('.incorrect-data');
+                });
+            } else {
+                addWorklog = true;
                 hideLoader();
-                showAuthError('.incorrect-data');
-            });
-        } else {
-            hideLoader();
-            showAuthError('.invalid-comment');
+                showAuthError('.invalid-comment');
+            }
         }
     });
 
