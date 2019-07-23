@@ -23,7 +23,7 @@ import {
 
 $(document).ready(function() {
 
-    var serverUrl = window.localStorage.getItem('active-server-url');
+    var serverUrl = window.localStorage.getItem('active-project');
     var jiraInfo = {};
     var selectProject = true;
     var openProject = true;
@@ -34,7 +34,164 @@ $(document).ready(function() {
         return false;
     };
 
-    // ---------- Check Validation User ---------- //
+    function showAuthError(el) {
+        $(el).removeClass('block--hide');
+    }
+
+    function hideAuthError(el) {
+        $(el).addClass('block--hide');
+    }
+
+    function showLoader() {
+        $('#loading').removeClass('block--hide');
+    }
+
+    function hideLoader() {
+        $('#loading').addClass('block--hide');
+    }
+
+    function showLoaderDot() {
+        $('#loaderDot').removeClass('block--hide');
+    }
+
+    function hideLoaderDot() {
+        $('#loaderDot').addClass('block--hide');
+    }
+
+    // ------------ ------- ----------- //
+    // ------------ Events ----------- //
+    // ------------ ------ ----------- //
+
+    $('#saved-servers').on('click', function (e) {
+        if (openProject) {
+            openProject = false;
+            if (e.target.className == 'saved-servers__btn') {
+                var value = JSON.parse(e.target.value);
+                showLoader();
+                checkValidation(value).then(function (data) {
+                    openProject = true;
+                    hideLoader();
+                    window.localStorage.setItem('active-project', JSON.stringify(value));
+                    setUserInfo(data);
+                }).catch(function (error) {
+                    openProject = true;
+                    hideLoader();
+                    $(e.target).parent().prev().removeClass('block--hide');
+                });
+            } else if (e.target.className == 'remove-servers-btn') {
+                openProject = true;
+                removeSavedServer(e.target.value);
+            }
+        }
+    });
+
+    $('#go-auth-step').on('click', function () {
+        $('#valid-user').addClass('block--hide');
+        $('#projects').addClass('block--hide');
+        $('#first-step').removeClass('block--hide');
+        $('.add-server__desc').removeClass('block--hide');
+        showSavedJiraUrl();
+    });
+
+    $('#rememberJiraUrl').on('click', function () {
+        $(this).text('Saved!');
+        var insertedUrl = $('#server-url').val();
+        rememberJiraUrl(insertedUrl);
+    });
+
+    $('#add-server').on('click', function () {
+        $('#add-server-wrap').removeClass('add-server-wrap--disable');
+        $('#add-server-wrap input').focus();
+        $(document).on('keyup', function (e) {
+            if (e.keyCode == 13 && $('#add-server-wrap input').val() != '') {
+                addNewProject();
+            }
+        });
+    });
+
+    $('#add-server__close').on('click', function () {
+        hideAuthError('.http-error');
+        $('#saved-servers').removeClass('block--hide');
+        $('#projects').addClass('block--hide');
+        $('.add-server__desc').removeClass('block--hide');
+        $('#add-server-wrap').addClass('add-server-wrap--disable');
+    });
+
+    $('#add-server__btn').on('click', function () {
+        addNewProject();
+    });
+
+    $('#saved-servers').on('click', function (e) {
+        if (openProject) {
+            openProject = false;
+            if (e.target.className == 'saved-servers__btn') {
+                var value = JSON.parse(e.target.value);
+                showLoader();
+                checkValidation(value).then(function (data) {
+                    openProject = true;
+                    hideLoader();
+                    window.localStorage.setItem('active-project', JSON.stringify(value));
+                    setUserInfo(data);
+                }).catch(function (error) {
+                    openProject = true;
+                    hideLoader();
+                    $(e.target).parent().prev().removeClass('block--hide');
+                });
+            } else if (e.target.className == 'remove-servers-btn') {
+                openProject = true;
+                removeSavedServer(e.target.value);
+            }
+        }
+    });
+
+    $('#copyAll').on('click', function () {
+        $(this).text('Copied');
+        copyAll();
+    });
+
+    $('#go-auth-step').on('click', function () {
+        $('#valid-user').addClass('block--hide');
+        $('#projects').addClass('block--hide');
+        $('#first-step').removeClass('block--hide');
+        $('.add-server__desc').removeClass('block--hide');
+        showSavedJiraUrl();
+    });
+
+    $('#rememberJiraUrl').on('click', function () {
+        $(this).text('Saved!');
+        var insertedUrl = $('#server-url').val();
+        rememberJiraUrl(insertedUrl);
+    });
+
+    $('#add-server').on('click', function () {
+        $('#add-server-wrap').removeClass('add-server-wrap--disable');
+        $('#add-server-wrap input').focus();
+        $(document).on('keyup', function (e) {
+            if (e.keyCode == 13 && $('#add-server-wrap input').val() != '') {
+                addNewProject();
+            }
+        });
+    });
+
+    $('#add-server__close').on('click', function () {
+        hideAuthError('.http-error');
+        $('#saved-servers').removeClass('block--hide');
+        $('#projects').addClass('block--hide');
+        $('.add-server__desc').removeClass('block--hide');
+        $('#add-server-wrap').addClass('add-server-wrap--disable');
+    });
+
+    $('#add-server__btn').on('click', function () {
+        addNewProject();
+    });
+
+    $('#go-info-step').on('click', function () {
+        $('#valid-user').removeClass('block--hide');
+        $('#worklogs').addClass('block--hide');
+    });
+
+    // ------------ Function ----------- //
+
     function setUserInfo(data) {
         $('#work-logged').text('');
         showLoaderDot();
@@ -49,15 +206,6 @@ $(document).ready(function() {
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
         $('#jira-key').text(data['issues'][0]['key'].replace(/[^a-zA-Z]+/g, ''));
         $('#jira-key').attr('href', JSON.parse(serverUrl).url);
-        return userName;
-    }
-
-    function showAuthError(el) {
-        $(el).removeClass('block--hide');
-    }
-
-    function hideAuthError(el) {
-        $(el).addClass('block--hide');
     }
     
     async function checkValidation(data) {
@@ -73,30 +221,6 @@ $(document).ready(function() {
                 }
             });
         });
-    }
-    // ---------- END: Check Validation User ---------- //
-
-    // ------------ Main Function ----------- //
-    function showLoader() {
-        $('#loading').show();
-    }
-
-    function hideLoader() {
-        $('#loading').hide();
-    }
-
-    function showLoaderDot() {
-        $('#loaderDot').show();
-    }
-
-    function hideLoaderDot() {
-        $('#loaderDot').hide();
-    }
-
-    function copyAll() {
-        var copyText = document.getElementById('standup-text');
-        copyText.select();
-        document.execCommand('copy');
     }
 
     function rememberJiraUrl(data) {
@@ -143,7 +267,7 @@ $(document).ready(function() {
         var project = Object.keys(jiraServers).find(key => jiraServers[key].key === projectKey);
         delete jiraServers[project];
         window.localStorage.setItem('jira-servers', JSON.stringify(jiraServers));
-        window.localStorage.setItem('active-server-url', '');
+        window.localStorage.setItem('active-project', '');
         showSavedJiraUrl();
     }
 
@@ -177,74 +301,10 @@ $(document).ready(function() {
             $('#saved-servers').html(
                 '<h5 class="saved-servers--empty">Server list is empty</h5>'
             );
-            window.localStorage.setItem('active-server-url', '');
+            window.localStorage.setItem('active-project', '');
             return false;
         }
     }
-
-    $('#saved-servers').on('click', function (e) {
-        if (openProject) {
-            openProject = false;
-            if (e.target.className == 'saved-servers__btn') {
-                var value = JSON.parse(e.target.value);
-                showLoader();
-                checkValidation(value).then(function (data) {
-                    openProject = true;
-                    hideLoader();
-                    window.localStorage.setItem('active-server-url', JSON.stringify(value));
-                    setUserInfo(data);
-                }).catch(function (error) {
-                    openProject = true;
-                    hideLoader();
-                    $(e.target).parent().prev().removeClass('block--hide');
-                });
-            } else if (e.target.className == 'remove-servers-btn') {
-                openProject = true;
-                removeSavedServer(e.target.value);
-            }
-        }
-    });
-
-    $('#copyAll').on('click', function () {
-        $(this).text('Copied');
-        copyAll();
-    });
-
-    $('#go-auth-step').on('click', function () {
-        $('#valid-user').addClass('block--hide');
-        $('#projects').addClass('block--hide');
-        $('#first-step').removeClass('block--hide');
-        $('.add-server__desc').removeClass('block--hide');
-        showSavedJiraUrl();
-    });
-
-    $('#rememberJiraUrl').on('click', function () {
-        $(this).text('Saved!');
-        var insertedUrl = $('#server-url').val();
-        rememberJiraUrl(insertedUrl);
-    });
-
-    $('#add-server').on('click', function () {
-        $('#add-server-wrap').removeClass('add-server-wrap--disable');
-        $('#add-server-wrap input').focus();
-        $(document).on('keyup', function(e) {
-            if (e.keyCode == 13 && $('#add-server-wrap input').val() != '') {
-                addNewProject();
-            }
-        });
-    });
-
-    $('#add-server__close').on('click', function () {
-        hideAuthError('.http-error');
-        $('#saved-servers').removeClass('block--hide');
-        $('#projects').addClass('block--hide');
-        $('.add-server__desc').removeClass('block--hide');
-        $('#add-server-wrap').addClass('add-server-wrap--disable');
-    });
-
-    $('#add-server__btn').on('click', function () {
-        addNewProject();
-    });
     
     // ------------------ //
 
@@ -307,7 +367,7 @@ $(document).ready(function() {
                 selectProject = true;
                 if (res != false && res != undefined) {
                     hideAuthError('.http-error');
-                    window.localStorage.setItem('active-server-url', JSON.stringify(data));
+                    window.localStorage.setItem('active-project', JSON.stringify(data));
                     showUserInfoSection(data);
                 }
             }).catch(function (error) {
@@ -332,8 +392,9 @@ $(document).ready(function() {
             $('#add-server-wrap input').val('');
             $('#saved-servers').removeClass('block--hide');
         }).catch(function (error) {
+            console.log(error, '>>>>>>>>>>>>>>>>>');
             hideLoader();
-            $('#first-step').removeClass('block--hide');
+            // $('#first-step').removeClass('block--hide');
             showSavedJiraUrl();
         });
     }
@@ -345,7 +406,7 @@ $(document).ready(function() {
             showLoader();
             $('#issue-key_title').text('');
             $('#worklogs-issuekey').val('')
-            var data = JSON.parse(window.localStorage.getItem('active-server-url'));
+            var data = JSON.parse(window.localStorage.getItem('active-project'));
             checkValidation(data).then(function (res) {
                 openWorklogs = true;
                 hideLoader();
@@ -417,11 +478,6 @@ $(document).ready(function() {
                 showAuthError('.invalid-comment');
             }
         }
-    });
-
-    $('#go-info-step').on('click', function () {
-        $('#valid-user').removeClass('block--hide');
-        $('#worklogs').addClass('block--hide');
     });
 
     // -------------- INIT ---------------- //

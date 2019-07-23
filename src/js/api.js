@@ -14,7 +14,7 @@ import $ from 'jquery';
 // `handlers` parameter for good when invoking msg.init()
 
 var userInfo = {};
-var serverData = window.localStorage.getItem('active-server-url');
+var serverData = window.localStorage.getItem('active-project');
 
 function httpGet(method, url) {
     return new Promise(function (resolve, reject) {
@@ -61,7 +61,7 @@ export function get_date(date = '') {
 }
 
 export function checkUserAuth(url) {
-    var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+    var server = JSON.parse(window.localStorage.getItem('active-project'));
     var theUrl = server.url + '/rest/api/2/search?jql=project=' + server.key + ' AND assignee=currentuser()';
     return new Promise(function (resolve, reject) {
         httpGet('GET', theUrl).then(function (data) {
@@ -90,7 +90,7 @@ export async function generateStandUp(date) {
 }
 
 function get_issues_with_worklogs(date) {
-    var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+    var server = JSON.parse(window.localStorage.getItem('active-project'));
     var theUrl = server.url + '/rest/api/2/search?jql=project=' + server.key + ' AND worklogDate=' + '"' + get_date(date) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
     return new Promise(resolve => {
         httpGet('GET', theUrl).then(function (data) {
@@ -105,7 +105,7 @@ function get_issues_with_worklogs(date) {
 export function get_issues_with_today_worklogs() {
     var today = new Date();
     var date = today.getUTCFullYear() + '-' + ('0' + (today.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
-    var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+    var server = JSON.parse(window.localStorage.getItem('active-project'));
     return new Promise(resolve => {
         var theUrl = server.url + '/rest/api/2/search?jql=project=' + server.key + ' AND worklogDate=' + '"' + get_date(date) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults=1000';
         httpGet('GET', theUrl).then(async function (data) {
@@ -147,7 +147,7 @@ function get_issues_keys(issues) {
 
 export function get_issues_by_key(key) {
     return new Promise((resolve, reject) => {
-        var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+        var server = JSON.parse(window.localStorage.getItem('active-project'));
         var theUrl = server.url + '/rest/api/2/issue/' + key;
         $.ajax({
             url: theUrl,
@@ -163,7 +163,7 @@ export function get_issues_by_key(key) {
 
 function get_worklogs_comments_from_issues(key) {
     return new Promise(resolve => {
-        var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+        var server = JSON.parse(window.localStorage.getItem('active-project'));
         var theUrl = server.url + '/rest/api/2/issue/' + key + '/worklog';
         var issueLink = server.url + '/browse/' + key;
         $.ajax({
@@ -211,7 +211,7 @@ export function get_projects(url) {
 }
 
 export function add_worklog(response) {
-    var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+    var server = JSON.parse(window.localStorage.getItem('active-project'));
     var theUrl = server.url + '/rest/api/2/issue/' + response.issue + '/worklog';
     var data = {
         "timeSpent": response.time,
