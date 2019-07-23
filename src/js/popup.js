@@ -48,7 +48,7 @@ $(document).ready(function() {
         $('#userName').text(data['issues'][0]['fields']['assignee']['displayName']);
         $('#userMail').text(data['issues'][0]['fields']['assignee']['emailAddress']);
         $('#jira-key').text(data['issues'][0]['key'].replace(/[^a-zA-Z]+/g, ''));
-        $('#jira-key').attr('href', JSON.parse(serverUrl).url);
+        $('#jira-key').attr('href', JSON.parse(window.localStorage.getItem('active-server-url')).url);
         return userName;
     }
 
@@ -331,10 +331,6 @@ $(document).ready(function() {
             jiraInfo = res;
             $('#add-server-wrap input').val('');
             $('#saved-servers').removeClass('block--hide');
-        }).catch(function (error) {
-            hideLoader();
-            $('#first-step').removeClass('block--hide');
-            showSavedJiraUrl();
         });
     }
 
