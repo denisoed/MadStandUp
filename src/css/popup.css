@@ -532,18 +532,12 @@
     position: relative;
 }
 
-.issue-key_issue button {
-    width: 40px;
+.issue-key_issue img {
+    width: 25px;
     height: 100%;
     position: absolute;
     top: 0;
-    right: 0;
-    background-color: #6F56F9;
-    color: #fff;
-    border: 0;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    cursor: pointer;
+    right: 10px;
 }
 
 .worklogs-issuekey_label {

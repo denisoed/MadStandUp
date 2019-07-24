@@ -357,18 +357,24 @@ $(document).ready(function() {
         }
     });
 
-    $('#findIssue').on('click', function () {
-        showLoader();
-        var issueKey = jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-' + $('#worklogs-issuekey').val();
-        get_issues_by_key(issueKey).then(issue => {
-            hideLoader();
-            $('#issue-key_title--error').addClass('block--hide');
-            $('#issue-key_title').text(issue.fields.summary);
-        }).catch(e => {
-            hideLoader();
-            $('#issue-key_title').text('');
-            $('#issue-key_title--error').removeClass('block--hide');
-        });
+    var timeout = null;
+    $('#worklogs-issuekey').on('keyup', function () {
+        if (timeout !== null) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(function () {
+            showLoader();
+            var issueKey = jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-' + $('#worklogs-issuekey').val();
+            get_issues_by_key(issueKey).then(issue => {
+                hideLoader();
+                $('#issue-key_title--error').addClass('block--hide');
+                $('#issue-key_title').text(issue.fields.summary);
+            }).catch(e => {
+                hideLoader();
+                $('#issue-key_title').text('');
+                $('#issue-key_title--error').removeClass('block--hide');
+            });
+        }, 500);
     });
 
     $('#worklogs-send').on('click', function () {
