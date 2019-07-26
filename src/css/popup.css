@@ -569,10 +569,10 @@
 }
 
 .issue-key_title {
-    margin-bottom: 10px;
+    position: relative;
+    margin-bottom: 15px;
     font-size: 14px;
 }
-
 
 .worklogs_content-issue-key input::placeholder {
     text-transform: none;
@@ -589,6 +589,7 @@
 }
 
 .worklogs_content-comment {
+    margin-top: 15px;
     margin-bottom: 6px;
 }
 
