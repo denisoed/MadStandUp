@@ -7,6 +7,9 @@ import {
     get_projects,
     get_issues_with_today_worklogs,
     get_issues_by_key,
+    get_issue_status,
+    get_issue_statuses,
+    update_issue_status,
     add_worklog
 } from './api';
 
@@ -331,6 +334,10 @@ $(document).ready(function() {
             jiraInfo = res;
             $('#add-server-wrap input').val('');
             $('#saved-servers').removeClass('block--hide');
+        }).catch(function (error) {
+            hideLoader();
+            $('#first-step').removeClass('block--hide');
+            showSavedJiraUrl();
         });
     }
 
@@ -365,10 +372,19 @@ $(document).ready(function() {
         timeout = setTimeout(function () {
             showLoader();
             var issueKey = jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-' + $('#worklogs-issuekey').val();
-            get_issues_by_key(issueKey).then(issue => {
+            get_issues_by_key(issueKey).then(data => {
                 hideLoader();
                 $('#issue-key_title--error').addClass('block--hide');
-                $('#issue-key_title').text(issue.fields.summary);
+                $('#issue-key_title').text(data.issues[0].fields.summary);
+                get_issue_statuses(issueKey).then(async statuses => {
+                    var select = $('#issue-statuses');
+                    var currentStatus = await get_issue_status(issueKey);
+                    $.each(statuses.transitions, function (val) {
+                        select.append($("<option></option>").attr("value", val.id).text(val.name));
+                    });
+                    // console.log(currentStatus.fields.status.name);
+                    // select.val(currentStatus.fields.status.name);
+                });
             }).catch(e => {
                 hideLoader();
                 $('#issue-key_title').text('');
@@ -376,6 +392,19 @@ $(document).ready(function() {
             });
         }, 500);
     });
+
+    // $('#issue-statuses').on('change', function () {
+    //     console.log();
+    //     var request = {
+    //         issueKey: 'NAPPY-4384',
+    //         status_id: $("#issue-statuses option:selected").val()
+    //     }
+    //     update_issue_status(request).then(res => {
+    //         console.log(res);
+    //     }).catch(function (e) {
+    //         console.log(e);
+    //     });
+    // });
 
     $('#worklogs-send').on('click', function () {
         if (addWorklog) {

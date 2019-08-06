@@ -568,10 +568,30 @@
     box-shadow: none;
 }
 
-.issue-key_title {
+.worklogs_taskinfo {
     position: relative;
     margin-bottom: 15px;
     font-size: 14px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 3px 3px 15px 0 rgba(28, 30, 36, .2);
+    padding: 10px 10px 15px;
+    cursor: pointer;
+    border: 1px solid rgba(28, 30, 36, .1);
+}
+
+.worklogs_taskinfo::before {
+    content: '⌄';
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    transform: translateX(-50%);
+    border-radius: 100%;
+    background-color: #7883dc;
+    text-align: center;
+    color: #fff;
 }
 
 .worklogs_content-issue-key input::placeholder {
