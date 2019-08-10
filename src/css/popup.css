@@ -532,18 +532,12 @@
     position: relative;
 }
 
-.issue-key_issue button {
-    width: 40px;
+.issue-key_issue img {
+    width: 25px;
     height: 100%;
     position: absolute;
     top: 0;
-    right: 0;
-    background-color: #6F56F9;
-    color: #fff;
-    border: 0;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    cursor: pointer;
+    right: 10px;
 }
 
 .worklogs-issuekey_label {
@@ -564,6 +558,10 @@
     box-shadow: 3px 3px 15px 0 rgba(28, 30, 36, .2);
 }
 
+.worklogs_content-issue-key {
+    margin-bottom: 15px;
+}
+
 .worklogs_content-issue-key input {
     text-transform: uppercase;
     border: 0;
@@ -574,11 +572,86 @@
     box-shadow: none;
 }
 
-.issue-key_title {
-    margin-bottom: 10px;
+.worklogs_taskinfo {
+    display: none;
+    position: relative;
+    margin: 15px 0;
     font-size: 14px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 3px 3px 15px 0 rgba(28, 30, 36, .2);
+    padding: 10px 10px 15px;
+    cursor: pointer;
+    border: 1px solid rgba(28, 30, 36, .1);
 }
 
+.worklogs_taskinfo p {
+    margin: 0 0 15px;
+}
+
+.worklogs_taskinfo .select {
+    position: relative;
+    user-select: none;
+}
+
+.worklogs_taskinfo .select .carrentStatus {
+    background-color: #6F56F9;
+    border-radius: 5px;
+    color: #fff;
+    padding: 6px 10px;
+    position: relative;
+}
+
+.worklogs_taskinfo .select .carrentStatus::before {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%); 
+    border-style: solid;
+    border-width: 6px 4px 0 4px;
+    border-color: #fff transparent transparent transparent;
+}
+
+.worklogs_taskinfo .select .listStatuses {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 2px;
+}
+
+.worklogs_taskinfo .select.listStatuses-show .listStatuses {
+    display: flex;
+}
+
+.worklogs_taskinfo .select.listStatuses-show .carrentStatus::before {
+    content: '';
+    transform: translateY(-50%) scale(-1);
+}
+
+.worklogs_taskinfo .select.listStatuses-ready .listStatuses {
+    display: none;
+}
+
+.worklogs_taskinfo .select.listStatuses-ready .carrentStatus::before {
+    display: none;
+}
+
+.worklogs_taskinfo .select .listStatuses button {
+    width: 100%;
+    background-color: #fff;
+    border: 0;
+    padding: 6px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.worklogs_taskinfo .select .listStatuses button:hover {
+    background-color: #edeaff;
+}
 
 .worklogs_content-issue-key input::placeholder {
     text-transform: none;
@@ -586,8 +659,7 @@
 
 .worklogs_content-timespent p {
     min-width: 75px;
-    font-family: 'Ubuntu',
-        sans-serif;
+    font-family: 'Ubuntu', sans-serif;
 }
 
 .worklogs_content-timespent input {
@@ -595,6 +667,7 @@
 }
 
 .worklogs_content-comment {
+    margin-top: 15px;
     margin-bottom: 6px;
 }
 

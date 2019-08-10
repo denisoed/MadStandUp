@@ -85,9 +85,16 @@
                 <span id="worklogs-issuekey_label"></span>
                 <input id="worklogs-issuekey" type="text">
               </label>
-              <button id="findIssue">Find</button>
+              <img src="../images/search.svg" alt="Search">
             </div>
-            <p id="issue-key_title" class="issue-key_title"></p>
+            <div class="worklogs_taskinfo">
+              <p id="issue-key_title" class="issue-key_title"></p>
+              <!-- <select name="statuses" id="issue-statuses"></select> -->
+              <div id="select" class="select">
+                <div id="carrentStatus" class="carrentStatus"></div>
+                <div id="listStatuses" class="listStatuses"></div>
+              </div>
+            </div>
             <p id="issue-key_title--error" class="http-error block--hide">Not found!</p>
           </div>
           <div class="worklogs_content-timespent">
@@ -95,7 +102,6 @@
             <input id="worklogs-time" type="text" placeholder="Defult time spent 1m">
           </div>
           <div class="worklogs_content-comment">
-            <p>Comment:</p>
             <textarea id="worklogs-comment" name="" cols="30" rows="1" placeholder="Сomment is required"></textarea>
           </div>
           <p class="http-error incorrect-data block--hide">Invalid data entered</p>

@@ -7,6 +7,9 @@ import {
     get_projects,
     get_issues_with_today_worklogs,
     get_issues_by_key,
+    get_issue_status,
+    get_issue_statuses,
+    update_issue_status,
     add_worklog
 } from './api';
 
@@ -25,6 +28,7 @@ $(document).ready(function() {
 
     var serverUrl = window.localStorage.getItem('active-server-url');
     var jiraInfo = {};
+    var selectedIssue = null;
     var selectProject = true;
     var openProject = true;
     var openWorklogs = true;
@@ -331,6 +335,10 @@ $(document).ready(function() {
             jiraInfo = res;
             $('#add-server-wrap input').val('');
             $('#saved-servers').removeClass('block--hide');
+        }).catch(function (error) {
+            hideLoader();
+            $('#first-step').removeClass('block--hide');
+            showSavedJiraUrl();
         });
     }
 
@@ -357,18 +365,64 @@ $(document).ready(function() {
         }
     });
 
-    $('#findIssue').on('click', function () {
-        showLoader();
-        var issueKey = jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-' + $('#worklogs-issuekey').val();
-        get_issues_by_key(issueKey).then(issue => {
-            hideLoader();
-            $('#issue-key_title--error').addClass('block--hide');
-            $('#issue-key_title').text(issue.fields.summary);
-        }).catch(e => {
-            hideLoader();
-            $('#issue-key_title').text('');
-            $('#issue-key_title--error').removeClass('block--hide');
+    function getIssueStatuses(issueKey) {
+        get_issue_statuses(issueKey).then(async statuses => {
+            $('#listStatuses').empty();
+            var currentStatus = await get_issue_status(issueKey);
+            var select = $('#listStatuses');
+            $('.worklogs_taskinfo').show();
+            if (statuses.transitions.length) {
+                $('#select').removeClass('listStatuses-ready');
+                statuses.transitions.forEach(val => {
+                    select.append($("<button class='statuses-button'></button>").attr("value", val.id).text(val.name));
+                });
+            } else {
+                $('#select').addClass('listStatuses-ready');
+            }
+            $('#carrentStatus').text(currentStatus.fields.status.name);
         });
+    }
+
+    var timeout = null;
+    $('#worklogs-issuekey').on('keyup', function () {
+        if (timeout !== null) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(function () {
+            showLoader();
+            var issueKey = jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-' + $('#worklogs-issuekey').val();
+            selectedIssue = issueKey;
+            get_issues_by_key(issueKey).then(data => {
+                hideLoader();
+                $('#issue-key_title--error').addClass('block--hide');
+                $('#select').removeClass('listStatuses-show');
+                $('#issue-key_title').text(data.issues[0].fields.summary);
+                getIssueStatuses(issueKey);
+            }).catch(e => {
+                hideLoader();
+                $('.worklogs_taskinfo').hide();
+                $('#issue-key_title').text('');
+                $('#issue-key_title--error').removeClass('block--hide');
+            });
+        }, 500);
+    });
+
+    $(document).on('click', function (e) {
+        if (e.target.className.includes('statuses-button')) {
+            var request = {
+                issueKey: selectedIssue,
+                status_id: e.target.value
+            }
+            update_issue_status(request).then(res => {
+                getIssueStatuses(selectedIssue);
+            }).catch(function (e) {
+                $('#select').removeClass('listStatuses-show');
+            });
+        }
+    });
+
+    $('#carrentStatus').on('click', function() {
+        $('#select').toggleClass('listStatuses-show');
     });
 
     $('#worklogs-send').on('click', function () {

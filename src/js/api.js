@@ -148,7 +148,39 @@ function get_issues_keys(issues) {
 export function get_issues_by_key(key) {
     return new Promise((resolve, reject) => {
         var server = JSON.parse(window.localStorage.getItem('active-server-url'));
-        var theUrl = server.url + '/rest/api/2/issue/' + key;
+        var theUrl = server.url + '/rest/api/2/search?jql=project=' + server.key + ' AND issue=' + key;
+        $.ajax({
+            url: theUrl,
+            success: function (data) {
+                resolve(data);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+};
+
+export function get_issue_status(key) {
+    return new Promise((resolve, reject) => {
+        var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+        var theUrl = server.url + '/rest/api/2/issue/' + key + '?fields=status';
+        $.ajax({
+            url: theUrl,
+            success: function (data) {
+                resolve(data);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+};
+
+export function get_issue_statuses(key) {
+    return new Promise((resolve, reject) => {
+        var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+        var theUrl = server.url + '/rest/api/2/issue/' + key + '/transitions';
         $.ajax({
             url: theUrl,
             success: function (data) {
@@ -217,6 +249,35 @@ export function add_worklog(response) {
         "timeSpent": response.time,
         "comment": response.comment
     };
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            type: 'POST',
+            url: theUrl,
+            type: 'POST',
+            data: JSON.stringify(data),
+            headers: {
+                'Access-Control-Allow-Origin': '*'
+            },
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                resolve(true);
+            },
+            error: function (e) {
+                reject(e);
+            }
+        });
+    });
+};
+
+export function update_issue_status(response) {
+    var server = JSON.parse(window.localStorage.getItem('active-server-url'));
+    var theUrl = server.url + '/rest/api/2/issue/' + response.issueKey + '/transitions?expand=transitions.fields';
+    var data = {
+        transition: {
+            id: response.status_id
+        }
+    };
+
     return new Promise(function (resolve, reject) {
         $.ajax({
             type: 'POST',
