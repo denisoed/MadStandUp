@@ -274,9 +274,10 @@ export function update_issue_status(response) {
     var theUrl = server.url + '/rest/api/2/issue/' + response.issueKey + '/transitions?expand=transitions.fields';
     var data = {
         transition: {
-            id: 101
+            id: response.status_id
         }
     };
+
     return new Promise(function (resolve, reject) {
         $.ajax({
             type: 'POST',

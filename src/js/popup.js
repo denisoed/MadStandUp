@@ -28,6 +28,7 @@ $(document).ready(function() {
 
     var serverUrl = window.localStorage.getItem('active-server-url');
     var jiraInfo = {};
+    var selectedIssue = null;
     var selectProject = true;
     var openProject = true;
     var openWorklogs = true;
@@ -364,6 +365,24 @@ $(document).ready(function() {
         }
     });
 
+    function getIssueStatuses(issueKey) {
+        get_issue_statuses(issueKey).then(async statuses => {
+            $('#listStatuses').empty();
+            var currentStatus = await get_issue_status(issueKey);
+            var select = $('#listStatuses');
+            $('.worklogs_taskinfo').show();
+            if (statuses.transitions.length) {
+                $('#select').removeClass('listStatuses-ready');
+                statuses.transitions.forEach(val => {
+                    select.append($("<button class='statuses-button'></button>").attr("value", val.id).text(val.name));
+                });
+            } else {
+                $('#select').addClass('listStatuses-ready');
+            }
+            $('#carrentStatus').text(currentStatus.fields.status.name);
+        });
+    }
+
     var timeout = null;
     $('#worklogs-issuekey').on('keyup', function () {
         if (timeout !== null) {
@@ -372,39 +391,39 @@ $(document).ready(function() {
         timeout = setTimeout(function () {
             showLoader();
             var issueKey = jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-' + $('#worklogs-issuekey').val();
+            selectedIssue = issueKey;
             get_issues_by_key(issueKey).then(data => {
                 hideLoader();
                 $('#issue-key_title--error').addClass('block--hide');
+                $('#select').removeClass('listStatuses-show');
                 $('#issue-key_title').text(data.issues[0].fields.summary);
-                get_issue_statuses(issueKey).then(async statuses => {
-                    var select = $('#issue-statuses');
-                    var currentStatus = await get_issue_status(issueKey);
-                    $.each(statuses.transitions, function (val) {
-                        select.append($("<option></option>").attr("value", val.id).text(val.name));
-                    });
-                    // console.log(currentStatus.fields.status.name);
-                    // select.val(currentStatus.fields.status.name);
-                });
+                getIssueStatuses(issueKey);
             }).catch(e => {
                 hideLoader();
+                $('.worklogs_taskinfo').hide();
                 $('#issue-key_title').text('');
                 $('#issue-key_title--error').removeClass('block--hide');
             });
         }, 500);
     });
 
-    // $('#issue-statuses').on('change', function () {
-    //     console.log();
-    //     var request = {
-    //         issueKey: 'NAPPY-4384',
-    //         status_id: $("#issue-statuses option:selected").val()
-    //     }
-    //     update_issue_status(request).then(res => {
-    //         console.log(res);
-    //     }).catch(function (e) {
-    //         console.log(e);
-    //     });
-    // });
+    $(document).on('click', function (e) {
+        if (e.target.className.includes('statuses-button')) {
+            var request = {
+                issueKey: selectedIssue,
+                status_id: e.target.value
+            }
+            update_issue_status(request).then(res => {
+                getIssueStatuses(selectedIssue);
+            }).catch(function (e) {
+                $('#select').removeClass('listStatuses-show');
+            });
+        }
+    });
+
+    $('#carrentStatus').on('click', function() {
+        $('#select').toggleClass('listStatuses-show');
+    });
 
     $('#worklogs-send').on('click', function () {
         if (addWorklog) {
