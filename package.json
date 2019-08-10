@@ -1,6 +1,6 @@
 {
   "name": "mad-stand-up",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Write stand-ups quickly",
   "engines": {
     "node": "7.10.1",

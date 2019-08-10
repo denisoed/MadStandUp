@@ -354,6 +354,7 @@ $(document).ready(function() {
                 openWorklogs = true;
                 hideLoader();
                 jiraInfo = res;
+                $('.worklogs_taskinfo').hide();
                 $('#worklogs').removeClass('block--hide');
                 $('#valid-user').addClass('block--hide');
                 $('#worklogs-issuekey_label').text(jiraInfo['issues'][0]['key'].replace(/[^a-zA-Z]+/g, '') + '-');
@@ -397,6 +398,7 @@ $(document).ready(function() {
                 $('#issue-key_title--error').addClass('block--hide');
                 $('#select').removeClass('listStatuses-show');
                 $('#issue-key_title').text(data.issues[0].fields.summary);
+                $('#issue-key_title').attr('href', JSON.parse(window.localStorage.getItem('active-server-url')).url + '/browse/' + issueKey);
                 getIssueStatuses(issueKey);
             }).catch(e => {
                 hideLoader();
