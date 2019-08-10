@@ -528,6 +528,10 @@
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+DQo8cG9seWdvbiBvcGFjaXR5PSIwLjciIHBvaW50cz0iMCw0IDE2LDQgOCwxMiIvPg0KPC9zdmc+DQo=');
 }
 
+.issue-key_title {
+    color: #1c1e24;
+}
+
 .issue-key_issue {
     position: relative;
 }
@@ -592,6 +596,7 @@
 .worklogs_taskinfo .select {
     position: relative;
     user-select: none;
+    margin-top: 10px;
 }
 
 .worklogs_taskinfo .select .carrentStatus {
@@ -634,6 +639,10 @@
 
 .worklogs_taskinfo .select.listStatuses-ready .listStatuses {
     display: none;
+}
+
+.worklogs_taskinfo .select.listStatuses-ready .carrentStatus {
+    cursor: not-allowed;
 }
 
 .worklogs_taskinfo .select.listStatuses-ready .carrentStatus::before {
