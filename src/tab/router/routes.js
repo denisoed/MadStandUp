@@ -1,10 +1,10 @@
-import PageIndex from './pages/Index';
-import Worklogs from './pages/Worklogs';
+import Dashboard from '../pages/Dashboard';
+import Worklogs from '../pages/Worklogs';
 
 export default [
   {
     path: '/',
-    component: PageIndex,
+    component: Dashboard,
   },
   {
     path: '/worklogs',
