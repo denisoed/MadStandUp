@@ -10,6 +10,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     projects: [],
+    project: {}
   },
   getters,
   mutations,
