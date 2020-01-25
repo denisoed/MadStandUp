@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-const httpClient = axios.create({
-  baseURL: 'https://pm.maddevs.co'
-});
+const httpClient = axios.create();
 
 export default httpClient;
