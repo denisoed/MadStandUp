@@ -20,9 +20,9 @@ function get_date(date = '') {
   }
 }
 
-function get_issues_with_worklogs(date) {
+function get_issues_with_worklogs() {
   var server = JSON.parse(window.localStorage.getItem('active-server-url'));
-  var theUrl = server.url + '/rest/api/2/search?jql=project=' + server.key + ' AND worklogDate=' + '"' + get_date(date) + '"' + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
+  var theUrl = server.url + '/rest/api/2/search?jql=project=' + server.key + ' AND worklogAuthor=currentuser()&fields=worklog&maxResults';
   return new Promise((resolve, reject) => {
     httpClient.get(theUrl).then(resp => {
       var issuesWithLogs = resp.data.issues;
@@ -58,7 +58,7 @@ function get_worklogs_from_issues(key) {
   });
 };
 
-function get_currentUser_worklogs(listLogs, date) {
+function get_currentUser_worklogs(listLogs) {
   return new Promise(resolve => {
     const userInfo = JSON.parse(window.localStorage.getItem('auth-user'));
     let array = [];
@@ -68,8 +68,7 @@ function get_currentUser_worklogs(listLogs, date) {
         link: logs.link,
       }
       logs.list.forEach(function (log) {
-        if (log['created'].slice(0, 10) == get_date(date) &&
-          userInfo['name'] == log['author']['name']) {
+        if (userInfo['name'] == log['author']['name']) {
           obj.list.push(log);
         }
       });
@@ -113,15 +112,15 @@ export const setActiveProject = ({ commit }, data) => {
   }));
 };
 
-export const getWorklogs = async ({ commit }, date) => {
-  const issues = await get_issues_with_worklogs(date);
+export const getWorklogs = async ({ commit }) => {
+  const issues = await get_issues_with_worklogs();
   if (issues !== undefined && issues.length !== 0) {
     var keys = await get_issues_keys(issues);
     var worklogs = [];
     for (const key of keys) {
       worklogs.push(await get_worklogs_from_issues(key));
     }
-    const userWorklogs = await get_currentUser_worklogs(worklogs, date);
+    const userWorklogs = await get_currentUser_worklogs(worklogs);
     commit(types.SET_YESTERDAY_WORKLOGS, userWorklogs);
   }
 };

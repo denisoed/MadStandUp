@@ -33,6 +33,24 @@
       </form>
       </modal-form>
     </b-modal>
+    <b-navbar>
+      <template slot="brand">
+        <b-navbar-item tag="router-link" :to="{ path: '/' }">
+          <img
+            src="https://raw.githubusercontent.com/buefy/buefy/dev/static/img/buefy-logo.png"
+            alt="Lightweight UI components for Vue.js based on Bulma"
+          >
+        </b-navbar-item>
+      </template>
+      <template slot="end">
+        <b-navbar-item tag="div">
+          <div class="buttons">
+            <b-button @click="prevWeek" type="is-primary">Prev Week</b-button>
+            <b-button @click="nextWeek" type="is-primary">Next Week</b-button>
+          </div>
+        </b-navbar-item>
+      </template>
+    </b-navbar>
     <DayPilotCalendar id="dp" :config="config" ref="calendar" />
   </section>
 </template>
@@ -52,6 +70,9 @@ export default {
   },
   data: function() {
     return {
+      currentDate: moment().subtract(1, 'days').format('YYYY-MM-DD'),
+      minusWeek: 8,
+      plusWeek: 8,
       startWorklog: null,
       endWorklog: null,
       worklogArgs: null,
@@ -63,7 +84,7 @@ export default {
         heightSpec: "Full",
         cellDuration: 10,
         cellHeight: 15,
-        dayBeginsHour: 7,
+        dayBeginsHour: 8,
         dayEndsHour: 24,
         startDate: moment().subtract(1, 'days').format('YYYY-MM-DD'),
         timeFormat: "Clock24Hours",
@@ -89,7 +110,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('getWorklogs', '2020-01-23');
+    this.$store.dispatch('getWorklogs');
   },
   computed: {
     // DayPilot.Calendar object - https://api.daypilot.org/daypilot-calendar-class/
@@ -133,12 +154,26 @@ export default {
           logs.push({
             id: log.id,
             start: moment(log.created).tz('Asia/Bishkek').format('YYYY-MM-DDTHH:mm:ss'),
-            end: moment(log.created).tz('Asia/Bishkek').add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss'),
+            end: moment(log.created).tz('Asia/Bishkek').add(log.timeSpentSeconds, 'seconds').format('YYYY-MM-DDTHH:mm:ss'),
             text: log.comment
           });
         });
       });
       return logs;
+    },
+    prevWeek() {
+      this.plusWeek = 8;
+      const startDate = moment(this.currentDate).subtract(this.minusWeek, 'days');
+      this.config.startDate = new DayPilot.Date(startDate.format(), true);
+      this.minusWeek += 8;
+      this.currentDate = startDate;
+    },
+    nextWeek() {
+      this.minusWeek = 8;
+      const startDate = moment(this.currentDate).add(this.plusWeek, 'days');
+      this.config.startDate = new DayPilot.Date(startDate.format(), true);
+      this.plusWeek += 8;
+      this.currentDate = startDate;
     }
   }
 }
