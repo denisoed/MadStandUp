@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section @mousemove="getCurrentTime" ref="worklogs">
     <b-modal
       :active.sync="modalOpened"
       @close="reset"
@@ -70,6 +70,8 @@ export default {
   },
   data: function() {
     return {
+      wrappCells: null,
+      currentTime: null,
       currentDate: moment().subtract(1, 'days').format('YYYY-MM-DD'),
       minusWeek: 8,
       plusWeek: 8,
@@ -128,8 +130,17 @@ export default {
   mounted: function() {
     this.loadEvents();
     this.calendar.message("Welcome!");
+    this.wrappCells = document.querySelector('.calendar_default_scroll').getBoundingClientRect();
   },
   methods: {
+    getCurrentTime(e) {
+      if (e.target.className == 'calendar_default_cell_inner') {
+        const hourHeight = this.wrappCells.height / (this.config.dayEndsHour - this.config.dayBeginsHour);
+        const startPosY = (e.clientY + document.documentElement.scrollTop) - (this.wrappCells.top);
+        const minutes = Math.floor(startPosY / (hourHeight / 60));
+        this.currentTime = moment.utc(moment.duration(minutes, "minutes").asMilliseconds()).format("HH:mm");
+      }
+    },
     loadEvents() {},
     createWorklog() {
       const dp = this.worklogArgs.control;
