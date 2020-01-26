@@ -63,9 +63,9 @@ export default {
         heightSpec: "Full",
         cellDuration: 10,
         cellHeight: 15,
-        dayBeginsHour: 8,
-        dayEndsHour: 22,
-        startDate: "2020-01-23",
+        dayBeginsHour: 7,
+        dayEndsHour: 24,
+        startDate: moment().subtract(1, 'days').format('YYYY-MM-DD'),
         timeFormat: "Clock24Hours",
         timeRangeSelectedHandling: "Enabled",
         onTimeRangeSelected: (args) => {
