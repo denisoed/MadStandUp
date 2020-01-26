@@ -45,6 +45,7 @@ export default {
     },
     setActiveProject(project) {
       this.$store.dispatch('setActiveProject', { project, baseUrl: this.jiraLink });
+      this.$store.dispatch('setAuthUser');
       this.selectedProject = window.localStorage.getItem('active-server-url');
     },
     validUrl() {

@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import moment from 'moment-timezone';
 import { DayPilot, DayPilotCalendar } from 'daypilot-pro-vue';
 import Vue from 'vue';
 
@@ -61,9 +63,12 @@ export default {
         heightSpec: "Full",
         cellDuration: 10,
         cellHeight: 15,
+        dayBeginsHour: 8,
+        dayEndsHour: 22,
+        startDate: "2020-01-23",
+        timeFormat: "Clock24Hours",
         timeRangeSelectedHandling: "Enabled",
         onTimeRangeSelected: (args) => {
-          // console.log(args);
           this.worklogArgs = args;
           this.startWorklog = args.start;
           this.endWorklog = args.end;
@@ -83,10 +88,20 @@ export default {
       },
     }
   },
+  created() {
+    this.$store.dispatch('getWorklogs', '2020-01-23');
+  },
   computed: {
     // DayPilot.Calendar object - https://api.daypilot.org/daypilot-calendar-class/
     calendar: function () {
       return this.$refs.calendar.control;
+    },
+    ...mapState(['yesterdayWorklogs'])
+  },
+  watch: {
+    yesterdayWorklogs(newValue) {
+      const logs = this.displayWorklogs(newValue);
+      Vue.set(this.config, "events", logs);
     }
   },
   mounted: function() {
@@ -94,13 +109,7 @@ export default {
     this.calendar.message("Welcome!");
   },
   methods: {
-    loadEvents() {
-      const events = [
-        // { id: 1, start: "2018-10-01T11:00:00", end: "2018-10-01T14:00:00", text: "Event 1" },
-        { id: 2, start: DayPilot.Date.today().addHours(11), end: DayPilot.Date.today().addHours(14), text: "Event 1"}
-      ];
-      Vue.set(this.config, "events", events);
-    },
+    loadEvents() {},
     createWorklog() {
       const dp = this.worklogArgs.control;
       dp.clearSelection();
@@ -116,6 +125,20 @@ export default {
     reset() {
       const dp = this.worklogArgs.control;
       dp.clearSelection();
+    },
+    displayWorklogs(worklogs) {
+      const logs = [];
+      worklogs.forEach(e => {
+        e.list.forEach(log => {
+          logs.push({
+            id: log.id,
+            start: moment(log.created).tz('Asia/Bishkek').format('YYYY-MM-DDTHH:mm:ss'),
+            end: moment(log.created).tz('Asia/Bishkek').add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss'),
+            text: log.comment
+          });
+        });
+      });
+      return logs;
     }
   }
 }

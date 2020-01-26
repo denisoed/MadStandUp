@@ -10,7 +10,9 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     projects: [],
-    project: {}
+    project: {},
+    authUser: {},
+    yesterdayWorklogs: []
   },
   getters,
   mutations,

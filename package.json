@@ -21,6 +21,8 @@
     "axios": "^0.19.0",
     "buefy": "^0.8.10",
     "daypilot-pro-vue": "https://npm.daypilot.org/daypilot-pro-vue/trial/2019.4.4112.tar.gz",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.27",
     "vue": "^2.6.10",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
