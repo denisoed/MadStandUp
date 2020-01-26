@@ -33,6 +33,12 @@
       </form>
       </modal-form>
     </b-modal>
+    <b-button
+      type="is-primary"
+      v-if="mousePositionY && mousePositionX"
+      :style="{ position: 'fixed', top: (mousePositionY - 20) + 'px', left: 0, zIndex: 999 }">
+      {{ currentTime }}
+    </b-button>
     <b-navbar>
       <template slot="brand">
         <b-navbar-item tag="router-link" :to="{ path: '/' }">
@@ -70,6 +76,8 @@ export default {
   },
   data: function() {
     return {
+      mousePositionY: null,
+      mousePositionX: null,
       wrappCells: null,
       currentTime: null,
       currentDate: moment().subtract(1, 'days').format('YYYY-MM-DD'),
@@ -135,6 +143,8 @@ export default {
   methods: {
     getCurrentTime(e) {
       if (e.target.className == 'calendar_default_cell_inner') {
+        this.mousePositionY = e.y;
+        this.mousePositionX = e.x;
         const hourHeight = this.wrappCells.height / (this.config.dayEndsHour - this.config.dayBeginsHour);
         const startPosY = (e.clientY + document.documentElement.scrollTop) - (this.wrappCells.top);
         const minutes = Math.floor(startPosY / (hourHeight / 60));
